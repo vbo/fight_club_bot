@@ -11,18 +11,41 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
-class HttpRequest {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonDeserializationContext;
+
+class TelegramApi {
   private static final String TOKEN = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
   private static final String URL = "https://api.telegram.org/bot";
   private final String method;
   private final String params;
   HttpURLConnection connection;
   
-  HttpRequest(String method) {
+  public static void sayHi(int chatId) {
+    TelegramApi req = new TelegramApi(
+      "sendMessage", 
+      "chat_id="+chatId+"&text=hi");
+    req.execute();
+  }
+
+  public static Telegram.Update[] getUpdates() {
+    TelegramApi req = new TelegramApi("getUpdates", "");
+    String resp = req.execute();
+    Gson g = new Gson();
+    Telegram.GetUpdatesResult updates =
+        g.fromJson(resp, Telegram.GetUpdatesResult.class);
+    return updates.result;
+  }
+
+  private TelegramApi(String method) {
     this(method, "");
   }
 
-  HttpRequest(String method, String params) {
+  private TelegramApi(String method, String params) {
     this.method = method;
     this.params = params;
     Storage.log("request: " + method + "?" + params);
@@ -55,7 +78,7 @@ class HttpRequest {
   }
 
   private void sendRequest() throws IOException {
-    DataOutputStream wr = new DataOutputStream (
+    DataOutputStream wr = new DataOutputStream(
         connection.getOutputStream());
     wr.writeBytes(params);
     wr.close();
