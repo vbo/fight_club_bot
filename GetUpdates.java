@@ -11,8 +11,8 @@ import java.lang.reflect.Type;
 
 class GetUpdates {
   public static void main(String[] args) {
-    Tangram.Update[] updates = getUpdates();
-    for (Tangram.Update upd : updates) {
+    Telegram.Update[] updates = getUpdates();
+    for (Telegram.Update upd : updates) {
       int chatId = upd.message.chat.id;
       sayHi(chatId);
     }
@@ -25,12 +25,12 @@ class GetUpdates {
     req.execute();
   }
 
-  private static Tangram.Update[] getUpdates() {
+  private static Telegram.Update[] getUpdates() {
     HttpRequest req = new HttpRequest("getUpdates", "");
     String resp = req.execute();
     Gson g = new Gson();
-    Tangram.GetUpdatesResult updates =
-        g.fromJson(resp, Tangram.GetUpdatesResult.class);
+    Telegram.GetUpdatesResult updates =
+        g.fromJson(resp, Telegram.GetUpdatesResult.class);
     return updates.result;
   }
 }

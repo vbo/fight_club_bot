@@ -1,6 +1,6 @@
 package ChatBot;
 
-class Tangram {
+class Telegram {
   class GetUpdatesResult {
     boolean ok;
     Update[] result;
