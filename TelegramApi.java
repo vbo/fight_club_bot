@@ -25,15 +25,17 @@ class TelegramApi {
   private final String params;
   HttpURLConnection connection;
   
-  public static void sayHi(int chatId) {
+  public static void say(int chatId, String text) {
     TelegramApi req = new TelegramApi(
       "sendMessage", 
-      "chat_id="+chatId+"&text=hi");
+      "chat_id=" + chatId + "&text=" + text);
     req.execute();
   }
 
-  public static Telegram.Update[] getUpdates() {
-    TelegramApi req = new TelegramApi("getUpdates", "");
+  public static Telegram.Update[] getUpdates(int offset) {
+    TelegramApi req = new TelegramApi(
+      "getUpdates",
+      "offset=" + offset);
     String resp = req.execute();
     Gson g = new Gson();
     Telegram.GetUpdatesResult updates =
