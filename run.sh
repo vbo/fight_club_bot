@@ -1,2 +1,10 @@
 #!/bin/bash
-ant compile && java -cp "./build/classes/;./lib/gson-2.6.2.jar" ChatBot.Main
+if [ "$(uname)" == "Darwin" ]; then
+    JAVA_PATH_SEP=":"
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    JAVA_PATH_SEP=":"
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    JAVA_PATH_SEP=";"
+fi
+
+java -cp "./build/classes/$JAVA_PATH_SEP./lib/gson-2.6.2.jar" ChatBot.Main
