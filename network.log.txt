@@ -1,224 +1,0 @@
-2016/05/30 19:49:09 request: getUpdates?offset=1
-2016/05/30 19:49:10 response: {"ok":true,"result":[{"update_id":529104895,"message":{"message_id":160,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464562064,"text":"test100"}},{"update_id":529104896,"message":{"message_id":162,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464562073,"text":"test101"}}]}
-2016/05/30 19:49:20 request: getUpdates?offset=529104897
-2016/05/30 19:49:20 response: {"ok":true,"result":[]}
-2016/05/30 19:49:30 request: getUpdates?offset=529104897
-2016/05/30 19:49:30 response: {"ok":true,"result":[]}
-2016/05/30 19:49:40 request: getUpdates?offset=529104897
-2016/05/30 19:49:40 response: {"ok":true,"result":[{"update_id":529104897,"message":{"message_id":163,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634173,"text":"hi"}}]}
-2016/05/30 19:49:40 request: sendMessage?chat_id=145731396&text=hi
-2016/05/30 19:49:40 response: {"ok":true,"result":{"message_id":164,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634177,"text":"hi"}}
-2016/05/30 19:49:50 request: getUpdates?offset=529104898
-2016/05/30 19:49:50 response: {"ok":true,"result":[]}
-2016/05/30 19:50:22 request: getUpdates?offset=1
-2016/05/30 19:50:23 response: {"ok":true,"result":[]}
-2016/05/30 19:50:33 request: getUpdates?offset=1
-2016/05/30 19:50:33 response: {"ok":true,"result":[{"update_id":529104898,"message":{"message_id":165,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634227,"text":"hi"}}]}
-2016/05/30 19:50:33 request: sendMessage?chat_id=145731396&text=hi
-2016/05/30 19:50:33 response: {"ok":true,"result":{"message_id":166,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634230,"text":"hi"}}
-2016/05/30 19:50:43 request: getUpdates?offset=529104899
-2016/05/30 19:50:43 response: {"ok":true,"result":[]}
-2016/05/30 19:50:53 request: getUpdates?offset=529104899
-2016/05/30 19:50:53 response: {"ok":true,"result":[{"update_id":529104899,"message":{"message_id":167,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634246,"text":"why are you writing hi?"}}]}
-2016/05/30 19:50:53 request: sendMessage?chat_id=145731396&text=Welcome to the fight club. You fight, you winyou level up and develop your character.
-2016/05/30 19:50:53 response: {"ok":true,"result":{"message_id":168,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634250,"text":"Welcome to the fight club. You fight, you winyou level up and develop your character."}}
-2016/05/30 19:50:53 request: sendMessage?chat_id=145731396&text=why are you writing hi?
-2016/05/30 19:50:53 response: {"ok":true,"result":{"message_id":169,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634250,"text":"why are you writing hi?"}}
-2016/05/30 19:51:03 request: getUpdates?offset=529104900
-2016/05/30 19:51:03 response: {"ok":true,"result":[]}
-2016/05/30 19:51:13 request: getUpdates?offset=529104900
-2016/05/30 19:51:13 response: {"ok":true,"result":[]}
-2016/05/30 19:51:21 request: getUpdates?offset=1
-2016/05/30 19:51:21 response: {"ok":true,"result":[]}
-2016/05/30 19:51:31 request: getUpdates?offset=1
-2016/05/30 19:51:31 response: {"ok":true,"result":[]}
-2016/05/30 19:51:41 request: getUpdates?offset=1
-2016/05/30 19:51:42 response: {"ok":true,"result":[{"update_id":529104900,"message":{"message_id":170,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634293,"text":"hi"}}]}
-2016/05/30 19:51:42 request: sendMessage?chat_id=145731396&text=hi
-2016/05/30 19:51:42 response: {"ok":true,"result":{"message_id":171,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634298,"text":"hi"}}
-2016/05/30 19:51:52 request: getUpdates?offset=529104901
-2016/05/30 19:51:52 response: {"ok":true,"result":[{"update_id":529104901,"message":{"message_id":172,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634303,"text":"hi"}}]}
-2016/05/30 19:51:52 request: sendMessage?chat_id=145731396&text=Welcome to the fight club. You fight, you winyou level up and develop your character.
-2016/05/30 19:51:52 response: {"ok":true,"result":{"message_id":173,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634309,"text":"Welcome to the fight club. You fight, you winyou level up and develop your character."}}
-2016/05/30 19:51:52 request: sendMessage?chat_id=145731396&text=hi
-2016/05/30 19:51:52 response: {"ok":true,"result":{"message_id":174,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634309,"text":"hi"}}
-2016/05/30 19:53:26 request: getUpdates?offset=1
-2016/05/30 19:53:27 response: {"ok":true,"result":[{"update_id":529104901,"message":{"message_id":172,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634303,"text":"hi"}},{"update_id":529104902,"message":{"message_id":175,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634368,"text":"hi"}}]}
-2016/05/30 19:53:37 request: getUpdates?offset=529104903
-2016/05/30 19:53:37 response: {"ok":true,"result":[{"update_id":529104903,"message":{"message_id":176,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634410,"text":"wtf"}}]}
-2016/05/30 19:53:37 request: sendMessage?chat_id=145731396&text=wtf
-2016/05/30 19:53:37 response: {"ok":true,"result":{"message_id":177,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634414,"text":"wtf"}}
-2016/05/30 19:53:47 request: getUpdates?offset=529104904
-2016/05/30 19:53:47 response: {"ok":true,"result":[]}
-2016/05/30 19:53:57 request: getUpdates?offset=529104904
-2016/05/30 19:53:57 response: {"ok":true,"result":[{"update_id":529104904,"message":{"message_id":178,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634425,"text":"wtf2"}}]}
-2016/05/30 19:53:57 request: sendMessage?chat_id=145731396&text=Welcome to the fight club. You fight, you winyou level up and develop your character.
-2016/05/30 19:53:57 response: {"ok":true,"result":{"message_id":179,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634434,"text":"Welcome to the fight club. You fight, you winyou level up and develop your character."}}
-2016/05/30 19:53:57 request: sendMessage?chat_id=145731396&text=wtf2
-2016/05/30 19:53:57 response: {"ok":true,"result":{"message_id":180,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634434,"text":"wtf2"}}
-2016/05/30 19:54:07 request: getUpdates?offset=529104905
-2016/05/30 19:54:07 response: {"ok":true,"result":[]}
-2016/05/30 19:54:17 request: getUpdates?offset=529104905
-2016/05/30 19:54:17 response: {"ok":true,"result":[]}
-2016/05/30 19:54:27 request: getUpdates?offset=529104905
-2016/05/30 19:54:28 response: {"ok":true,"result":[]}
-2016/05/30 19:54:38 request: getUpdates?offset=529104905
-2016/05/30 19:54:38 response: {"ok":true,"result":[]}
-2016/05/30 19:54:48 request: getUpdates?offset=529104905
-2016/05/30 19:54:48 response: {"ok":true,"result":[]}
-2016/05/30 19:54:58 request: getUpdates?offset=529104905
-2016/05/30 19:54:58 response: {"ok":true,"result":[]}
-2016/05/30 19:55:08 request: getUpdates?offset=529104905
-2016/05/30 19:55:08 response: {"ok":true,"result":[]}
-2016/05/30 19:55:26 request: getUpdates?offset=1
-2016/05/30 19:55:26 response: {"ok":true,"result":[]}
-2016/05/30 19:55:36 request: getUpdates?offset=1
-2016/05/30 19:55:36 response: {"ok":true,"result":[]}
-2016/05/30 19:55:46 request: getUpdates?offset=1
-2016/05/30 19:55:46 response: {"ok":true,"result":[{"update_id":529104905,"message":{"message_id":181,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634538,"text":"\/start","entities":[{"type":"bot_command","offset":0,"length":6}]}},{"update_id":529104906,"message":{"message_id":182,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634541,"text":"hi"}}]}
-2016/05/30 19:55:46 request: sendMessage?chat_id=145731396&text=Welcome to the fight club. You fight, you winyou level up and develop your character.
-2016/05/30 19:55:46 response: {"ok":true,"result":{"message_id":183,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634543,"text":"Welcome to the fight club. You fight, you winyou level up and develop your character."}}
-2016/05/30 19:55:46 request: sendMessage?chat_id=145731396&text=hi
-2016/05/30 19:55:46 response: {"ok":true,"result":{"message_id":184,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634543,"text":"hi"}}
-2016/05/30 19:55:56 request: getUpdates?offset=529104907
-2016/05/30 19:55:56 response: {"ok":true,"result":[]}
-2016/05/30 19:56:06 request: getUpdates?offset=529104907
-2016/05/30 19:56:07 response: {"ok":true,"result":[]}
-2016/05/30 19:56:17 request: getUpdates?offset=529104907
-2016/05/30 19:56:17 response: {"ok":true,"result":[]}
-2016/05/30 19:56:27 request: getUpdates?offset=529104907
-2016/05/30 19:56:27 response: {"ok":true,"result":[]}
-2016/05/30 19:56:37 request: getUpdates?offset=529104907
-2016/05/30 19:56:37 response: {"ok":true,"result":[]}
-2016/05/30 19:56:47 request: getUpdates?offset=529104907
-2016/05/30 19:56:48 response: {"ok":true,"result":[]}
-2016/05/30 19:56:58 request: getUpdates?offset=529104907
-2016/05/30 19:56:58 response: {"ok":true,"result":[]}
-2016/05/30 19:57:08 request: getUpdates?offset=529104907
-2016/05/30 19:57:08 response: {"ok":true,"result":[]}
-2016/05/30 19:57:18 request: getUpdates?offset=529104907
-2016/05/30 19:57:18 response: {"ok":true,"result":[]}
-2016/05/30 19:57:29 request: getUpdates?offset=1
-2016/05/30 19:57:29 response: {"ok":true,"result":[]}
-2016/05/30 19:57:39 request: getUpdates?offset=1
-2016/05/30 19:57:39 response: {"ok":true,"result":[{"update_id":529104907,"message":{"message_id":185,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634650,"text":"hi"}}]}
-2016/05/30 19:57:39 request: sendMessage?chat_id=145731396&text=Welcome to the Fight Club. You fight, you win, you level up and develop your character.
-2016/05/30 19:57:39 response: {"ok":true,"result":{"message_id":186,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634656,"text":"Welcome to the Fight Club. You fight, you win, you level up and develop your character."}}
-2016/05/30 19:57:49 request: getUpdates?offset=529104908
-2016/05/30 19:57:50 response: {"ok":true,"result":[{"update_id":529104908,"message":{"message_id":187,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634665,"text":"ok, what now?"}}]}
-2016/05/30 19:57:50 request: sendMessage?chat_id=145731396&text=ok, what now?
-2016/05/30 19:57:50 response: {"ok":true,"result":{"message_id":188,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634666,"text":"ok, what now?"}}
-2016/05/30 21:55:57 request: getUpdates?offset=1
-2016/05/30 21:55:58 response: {"ok":true,"result":[{"update_id":529104908,"message":{"message_id":187,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464634665,"text":"ok, what now?"}},{"update_id":529104909,"message":{"message_id":189,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464639523,"text":"\/start","entities":[{"type":"bot_command","offset":0,"length":6}]}},{"update_id":529104910,"message":{"message_id":190,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641162,"text":"\/start","entities":[{"type":"bot_command","offset":0,"length":6}]}}]}
-2016/05/30 21:56:08 request: getUpdates?offset=529104911
-2016/05/30 21:56:08 response: {"ok":true,"result":[{"update_id":529104911,"message":{"message_id":191,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641763,"text":"privet"}}]}
-2016/05/30 21:56:08 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 21:56:08 response: {"ok":true,"result":{"message_id":192,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641765,"text":"No such command"}}
-2016/05/30 21:56:18 request: getUpdates?offset=529104912
-2016/05/30 21:56:18 response: {"ok":true,"result":[{"update_id":529104912,"message":{"message_id":193,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641769,"text":"hi"}}]}
-2016/05/30 21:56:18 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 21:56:18 response: {"ok":true,"result":{"message_id":194,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641775,"text":"No such command"}}
-2016/05/30 21:56:28 request: getUpdates?offset=529104913
-2016/05/30 21:56:28 response: {"ok":true,"result":[]}
-2016/05/30 21:56:38 request: getUpdates?offset=529104913
-2016/05/30 21:56:38 response: {"ok":true,"result":[{"update_id":529104913,"message":{"message_id":195,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641792,"text":"hi"}}]}
-2016/05/30 21:56:38 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 21:56:38 response: {"ok":true,"result":{"message_id":196,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641795,"text":"No such command"}}
-2016/05/30 21:57:09 request: getUpdates?offset=1
-2016/05/30 21:57:10 response: {"ok":true,"result":[{"update_id":529104913,"message":{"message_id":195,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641792,"text":"hi"}}]}
-2016/05/30 21:57:20 request: getUpdates?offset=529104914
-2016/05/30 21:57:20 response: {"ok":true,"result":[{"update_id":529104914,"message":{"message_id":197,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641830,"text":"hi"}}]}
-2016/05/30 21:57:20 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 21:57:20 response: {"ok":true,"result":{"message_id":198,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641837,"text":"No such command"}}
-2016/05/30 21:58:07 request: getUpdates?offset=1
-2016/05/30 21:58:07 response: {"ok":true,"result":[{"update_id":529104914,"message":{"message_id":197,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641830,"text":"hi"}}]}
-2016/05/30 21:58:17 request: getUpdates?offset=529104915
-2016/05/30 21:58:17 response: {"ok":true,"result":[{"update_id":529104915,"message":{"message_id":199,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641886,"text":"hi"}}]}
-2016/05/30 21:58:27 request: getUpdates?offset=529104916
-2016/05/30 21:58:28 response: {"ok":true,"result":[]}
-2016/05/30 21:58:38 request: getUpdates?offset=529104916
-2016/05/30 21:58:38 response: {"ok":true,"result":[{"update_id":529104916,"message":{"message_id":200,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641906,"text":"hi"}}]}
-2016/05/30 21:58:38 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 21:58:38 response: {"ok":true,"result":{"message_id":201,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641915,"text":"hi!"}}
-2016/05/30 21:58:48 request: getUpdates?offset=529104917
-2016/05/30 21:58:48 response: {"ok":true,"result":[{"update_id":529104917,"message":{"message_id":202,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641918,"text":"privet"}}]}
-2016/05/30 21:58:48 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 21:58:48 response: {"ok":true,"result":{"message_id":203,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641925,"text":"No such command"}}
-2016/05/30 22:00:58 request: getUpdates?offset=1
-2016/05/30 22:00:59 response: {"ok":true,"result":[{"update_id":529104917,"message":{"message_id":202,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641918,"text":"privet"}}]}
-2016/05/30 22:01:44 request: getUpdates?offset=1
-2016/05/30 22:01:44 response: {"ok":true,"result":[{"update_id":529104917,"message":{"message_id":202,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641918,"text":"privet"}}]}
-2016/05/30 22:07:41 request: getUpdates?offset=1
-2016/05/30 22:07:42 response: {"ok":true,"result":[{"update_id":529104917,"message":{"message_id":202,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464641918,"text":"privet"}}]}
-2016/05/30 22:07:44 request: getUpdates?offset=529104918
-2016/05/30 22:07:44 response: {"ok":true,"result":[]}
-2016/05/30 22:07:46 request: getUpdates?offset=529104918
-2016/05/30 22:07:46 response: {"ok":true,"result":[]}
-2016/05/30 22:07:48 request: getUpdates?offset=529104918
-2016/05/30 22:07:48 response: {"ok":true,"result":[{"update_id":529104918,"message":{"message_id":204,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642464,"text":"hi"}}]}
-2016/05/30 22:07:48 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 22:07:48 response: {"ok":true,"result":{"message_id":205,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642465,"text":"hi!"}}
-2016/05/30 22:07:50 request: getUpdates?offset=529104919
-2016/05/30 22:07:50 response: {"ok":true,"result":[]}
-2016/05/30 22:07:52 request: getUpdates?offset=529104919
-2016/05/30 22:07:52 response: {"ok":true,"result":[{"update_id":529104919,"message":{"message_id":206,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642468,"text":"privet"}}]}
-2016/05/30 22:07:52 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 22:07:52 response: {"ok":true,"result":{"message_id":207,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642469,"text":"No such command"}}
-2016/05/30 22:07:54 request: getUpdates?offset=529104920
-2016/05/30 22:07:54 response: {"ok":true,"result":[]}
-2016/05/30 22:16:17 request: getUpdates?offset=1
-2016/05/30 22:16:18 response: {"ok":true,"result":[]}
-2016/05/30 22:16:20 request: getUpdates?offset=1
-2016/05/30 22:16:20 response: {"ok":true,"result":[]}
-2016/05/30 22:16:22 request: getUpdates?offset=1
-2016/05/30 22:16:22 response: {"ok":true,"result":[]}
-2016/05/30 22:16:24 request: getUpdates?offset=1
-2016/05/30 22:16:24 response: {"ok":true,"result":[{"update_id":529104920,"message":{"message_id":208,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642980,"text":"privet"}}]}
-2016/05/30 22:16:24 request: sendMessage?chat_id=145731396&text=No such command
-2016/05/30 22:16:24 response: {"ok":true,"result":{"message_id":209,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642981,"text":"No such command"}}
-2016/05/30 22:16:26 request: getUpdates?offset=529104921
-2016/05/30 22:16:26 response: {"ok":true,"result":[{"update_id":529104921,"message":{"message_id":210,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642983,"text":"hi"}}]}
-2016/05/30 22:16:26 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 22:16:26 response: {"ok":true,"result":{"message_id":211,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642983,"text":"hi!"}}
-2016/05/30 22:16:28 request: getUpdates?offset=529104922
-2016/05/30 22:16:28 response: {"ok":true,"result":[]}
-2016/05/30 22:21:07 request: getUpdates?offset=1
-2016/05/30 22:21:07 response: {"ok":true,"result":[]}
-2016/05/30 22:21:09 request: getUpdates?offset=1
-2016/05/30 22:21:09 response: {"ok":true,"result":[]}
-2016/05/30 22:21:11 request: getUpdates?offset=1
-2016/05/30 22:21:11 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
-2016/05/30 22:21:13 request: getUpdates?offset=1
-2016/05/30 22:21:13 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
-2016/05/30 22:21:15 request: getUpdates?offset=1
-2016/05/30 22:21:15 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
-2016/05/30 22:21:17 request: getUpdates?offset=1
-2016/05/30 22:21:18 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}},{"update_id":529104923,"message":{"message_id":213,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643274,"text":"hi"}}]}
-2016/05/30 22:21:18 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 22:21:18 response: {"ok":true,"result":{"message_id":214,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643274,"text":"hi!"}}
-2016/05/30 22:21:20 request: getUpdates?offset=529104924
-2016/05/30 22:21:20 response: {"ok":true,"result":[]}
-2016/05/30 22:21:22 request: getUpdates?offset=529104924
-2016/05/30 22:21:22 response: {"ok":true,"result":[]}
-2016/05/30 22:21:24 request: getUpdates?offset=529104924
-2016/05/30 22:21:24 response: {"ok":true,"result":[]}
-2016/05/30 22:21:26 request: getUpdates?offset=529104924
-2016/05/30 22:21:26 response: {"ok":true,"result":[{"update_id":529104924,"message":{"message_id":215,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643281,"text":"stats"}}]}
-2016/05/30 22:21:26 request: sendMessage?chat_id=145731396&text=Your hp is 45
-2016/05/30 22:21:26 response: {"ok":true,"result":{"message_id":216,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643283,"text":"Your hp is 45"}}
-2016/05/30 22:21:28 request: getUpdates?offset=529104925
-2016/05/30 22:21:28 response: {"ok":true,"result":[]}
-2016/05/30 22:21:30 request: getUpdates?offset=529104925
-2016/05/30 22:21:30 response: {"ok":true,"result":[{"update_id":529104925,"message":{"message_id":217,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643285,"text":"hi"}}]}
-2016/05/30 22:21:30 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 22:21:30 response: {"ok":true,"result":{"message_id":218,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643287,"text":"hi!"}}
-2016/05/30 22:21:32 request: getUpdates?offset=529104926
-2016/05/30 22:21:32 response: {"ok":true,"result":[]}
-2016/05/30 22:21:35 request: getUpdates?offset=1
-2016/05/30 22:21:36 response: {"ok":true,"result":[]}
-2016/05/30 22:21:38 request: getUpdates?offset=1
-2016/05/30 22:21:38 response: {"ok":true,"result":[]}
-2016/05/30 22:21:40 request: getUpdates?offset=1
-2016/05/30 22:21:40 response: {"ok":true,"result":[{"update_id":529104926,"message":{"message_id":219,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643296,"text":"hi"}}]}
-2016/05/30 22:21:40 request: sendMessage?chat_id=145731396&text=hi!
-2016/05/30 22:21:40 response: {"ok":true,"result":{"message_id":220,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643297,"text":"hi!"}}
