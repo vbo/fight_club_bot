@@ -50,7 +50,7 @@ class TelegramApi {
   private TelegramApi(String method, String params) {
     this.method = method;
     this.params = params;
-    Storage.log("request: " + method + "?" + params);
+    Logger.log("request: " + method + "?" + params);
   }
 
   public String execute() {
@@ -62,7 +62,7 @@ class TelegramApi {
     } catch (Exception e) {
       System.out.println("Error while handling http request " + e);
     }
-    Storage.log("response: " + result);
+    Logger.log("response: " + result);
     return result;
   }
 
