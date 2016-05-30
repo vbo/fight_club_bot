@@ -182,3 +182,43 @@
 2016/05/30 22:16:26 response: {"ok":true,"result":{"message_id":211,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464642983,"text":"hi!"}}
 2016/05/30 22:16:28 request: getUpdates?offset=529104922
 2016/05/30 22:16:28 response: {"ok":true,"result":[]}
+2016/05/30 22:21:07 request: getUpdates?offset=1
+2016/05/30 22:21:07 response: {"ok":true,"result":[]}
+2016/05/30 22:21:09 request: getUpdates?offset=1
+2016/05/30 22:21:09 response: {"ok":true,"result":[]}
+2016/05/30 22:21:11 request: getUpdates?offset=1
+2016/05/30 22:21:11 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
+2016/05/30 22:21:13 request: getUpdates?offset=1
+2016/05/30 22:21:13 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
+2016/05/30 22:21:15 request: getUpdates?offset=1
+2016/05/30 22:21:15 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}}]}
+2016/05/30 22:21:17 request: getUpdates?offset=1
+2016/05/30 22:21:18 response: {"ok":true,"result":[{"update_id":529104922,"message":{"message_id":212,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643267,"text":"hi"}},{"update_id":529104923,"message":{"message_id":213,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643274,"text":"hi"}}]}
+2016/05/30 22:21:18 request: sendMessage?chat_id=145731396&text=hi!
+2016/05/30 22:21:18 response: {"ok":true,"result":{"message_id":214,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643274,"text":"hi!"}}
+2016/05/30 22:21:20 request: getUpdates?offset=529104924
+2016/05/30 22:21:20 response: {"ok":true,"result":[]}
+2016/05/30 22:21:22 request: getUpdates?offset=529104924
+2016/05/30 22:21:22 response: {"ok":true,"result":[]}
+2016/05/30 22:21:24 request: getUpdates?offset=529104924
+2016/05/30 22:21:24 response: {"ok":true,"result":[]}
+2016/05/30 22:21:26 request: getUpdates?offset=529104924
+2016/05/30 22:21:26 response: {"ok":true,"result":[{"update_id":529104924,"message":{"message_id":215,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643281,"text":"stats"}}]}
+2016/05/30 22:21:26 request: sendMessage?chat_id=145731396&text=Your hp is 45
+2016/05/30 22:21:26 response: {"ok":true,"result":{"message_id":216,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643283,"text":"Your hp is 45"}}
+2016/05/30 22:21:28 request: getUpdates?offset=529104925
+2016/05/30 22:21:28 response: {"ok":true,"result":[]}
+2016/05/30 22:21:30 request: getUpdates?offset=529104925
+2016/05/30 22:21:30 response: {"ok":true,"result":[{"update_id":529104925,"message":{"message_id":217,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643285,"text":"hi"}}]}
+2016/05/30 22:21:30 request: sendMessage?chat_id=145731396&text=hi!
+2016/05/30 22:21:30 response: {"ok":true,"result":{"message_id":218,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643287,"text":"hi!"}}
+2016/05/30 22:21:32 request: getUpdates?offset=529104926
+2016/05/30 22:21:32 response: {"ok":true,"result":[]}
+2016/05/30 22:21:35 request: getUpdates?offset=1
+2016/05/30 22:21:36 response: {"ok":true,"result":[]}
+2016/05/30 22:21:38 request: getUpdates?offset=1
+2016/05/30 22:21:38 response: {"ok":true,"result":[]}
+2016/05/30 22:21:40 request: getUpdates?offset=1
+2016/05/30 22:21:40 response: {"ok":true,"result":[{"update_id":529104926,"message":{"message_id":219,"from":{"id":145731396,"first_name":"Andrey","last_name":"Levin"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643296,"text":"hi"}}]}
+2016/05/30 22:21:40 request: sendMessage?chat_id=145731396&text=hi!
+2016/05/30 22:21:40 response: {"ok":true,"result":{"message_id":220,"from":{"id":224259678,"first_name":"FightClub","username":"TheFightClubBot"},"chat":{"id":145731396,"first_name":"Andrey","last_name":"Levin","type":"private"},"date":1464643297,"text":"hi!"}}
