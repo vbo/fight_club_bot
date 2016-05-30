@@ -10,6 +10,16 @@ class Storage {
   private static Gson g = new Gson();
   private static int maxUpdateId = 0;
 
+  static Client getOpponentReadyToFight() {
+    for (String clientJson : clients.values()) {
+      Client c = g.fromJson(clientJson, Client.class);
+      if (c.status == Client.Status.READY_TO_FIGHT) {
+        return c;
+      }
+    }
+    return null;
+  }
+
   static Client getClientByChatId(int chatId) {
     String clientJson = clients.get(chatId);
     if (clientJson == null) {
