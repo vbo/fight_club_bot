@@ -12,9 +12,8 @@ public class Main {
 
   public static void main(String[] args)
       throws InterruptedException {
-    long startTime = System.currentTimeMillis() / 1000L;
-    System.out.println("Initialising main loop " + startTime);
     int maxUpdateId = Storage.getMaxUpdateId();
+    System.out.println("Starting from updateId " + maxUpdateId);
     while (true) {
       Telegram.Update[] updates = TelegramApi.getUpdates(maxUpdateId + 1);
       Arrays.sort(updates, new Comparator<Telegram.Update>() {
@@ -23,74 +22,72 @@ public class Main {
         }
       });
       for (Telegram.Update upd : updates) {
-        if (upd.message.date > startTime) {
-          int chatId = upd.message.chat.id;
-          Client client = Storage.getClientByChatId(chatId);
-          if (client == null) {
-            client = new Client(chatId);
+        int chatId = upd.message.chat.id;
+        Client client = Storage.getClientByChatId(chatId);
+        if (client == null) {
+          client = new Client(chatId);
+        }
+        String txt = upd.message.text;
+        if (txt.equals("hi")) {
+          msg(client, "hi!");
+        } else if (txt.equals("stats")) {
+          msg(client, "Your hp is " + client.hp + ".\n"
+            + "Status is " + client.status + ".\n"
+            + "You won " + client.fightsWon + " battles "
+            + "out of " + client.totalFights + ".");
+          //TODO: stats should show your status
+        } else if (txt.equals("fight bot")) {
+          if (client.status != Client.Status.READY_TO_FIGHT) {
+            msg(client, "You need to start a fight first");
+          } else {
+            client.status = Client.Status.FIGHTING;
+            Client bot = new Client(-client.chatId);
+            client.fightingChatId = bot.chatId;
+            bot.fightingChatId = client.chatId;
+            bot.status = Client.Status.FIGHTING;
+            bot.isHitReady = true;
+            Storage.saveClient(bot.chatId, bot);
+            msg(client, "You're now fighting with a bot");
           }
-          String txt = upd.message.text;
-          if (txt.equals("hi")) {
-            msg(client, "hi!");
-          } else if (txt.equals("stats")) {
-            msg(client, "Your hp is " + client.hp + ".\n"
-              + "Status is " + client.status + ".\n"
-              + "You won " + client.fightsWon + " battles "
-              + "out of " + client.totalFights + ".");
-            //TODO: stats should show your status
-          } else if (txt.equals("fight bot")) {
-            if (client.status != Client.Status.READY_TO_FIGHT) {
-              msg(client, "You need to start a fight first");
+        } else if (txt.equals("fight")) {
+          if (client.status != Client.Status.IDLE) {
+            msg(client, "You're not idle");
+          } else {
+            Client opponent = Storage.getOpponentReadyToFight();
+            if (opponent == null) {
+              msg(client, "You're now waiting for a real opponent");
+              client.status = Client.Status.READY_TO_FIGHT;
             } else {
               client.status = Client.Status.FIGHTING;
-              Client bot = new Client(-client.chatId);
-              client.fightingChatId = bot.chatId;
-              bot.fightingChatId = client.chatId;
-              bot.status = Client.Status.FIGHTING;
-              bot.isHitReady = true;
-              Storage.saveClient(bot.chatId, bot);
-              msg(client, "You're now fighting with a bot");
+              opponent.status = Client.Status.FIGHTING;
+              client.fightingChatId = opponent.chatId;
+              opponent.fightingChatId = client.chatId;
+              Storage.saveClient(opponent.chatId, opponent);
+              msg(client, "You're now fighting with a real opponent");
+              msg(opponent, "You're now fighting with a real opponent");
             }
-          } else if (txt.equals("fight")) {
-            if (client.status != Client.Status.IDLE) {
-              msg(client, "You're not idle");
-            } else {
-              Client opponent = Storage.getOpponentReadyToFight();
-              if (opponent == null) {
-                msg(client, "You're now waiting for a real opponent");
-                client.status = Client.Status.READY_TO_FIGHT;
-              } else {
-                client.status = Client.Status.FIGHTING;
-                opponent.status = Client.Status.FIGHTING;
-                client.fightingChatId = opponent.chatId;
-                opponent.fightingChatId = client.chatId;
-                Storage.saveClient(opponent.chatId, opponent);
-                msg(client, "You're now fighting with a real opponent");
-                msg(opponent, "You're now fighting with a real opponent");
-              }
-            }
-          } else if (txt.equals("hit")) {
-            if (client.status != Client.Status.FIGHTING) {
-              msg(client, "You need to start a fight first");
-            } else {
-              handleHit(client);
-            }
-          } else if (txt.equals("potion")) {
-            client.hp += 10;
-            if (client.hp > client.maxHp) {
-              client.hp = client.maxHp;
-            }
-            msg(client, "Potion consumed");
-          } else {
-            msg(client, "No such command");
           }
-          maxUpdateId = upd.update_id;
-          Storage.saveMaxUpdateId(maxUpdateId);
-          // TODO: dragons here, updateId is written, client is not
-          Storage.saveClient(chatId, client);
+        } else if (txt.equals("hit")) {
+          if (client.status != Client.Status.FIGHTING) {
+            msg(client, "You need to start a fight first");
+          } else {
+            handleHit(client);
+          }
+        } else if (txt.equals("potion")) {
+          client.hp += 10;
+          if (client.hp > client.maxHp) {
+            client.hp = client.maxHp;
+          }
+          msg(client, "Potion consumed");
+        } else {
+          msg(client, "No such command");
         }
+        maxUpdateId = upd.update_id;
+        Storage.saveMaxUpdateId(maxUpdateId);
+        // TODO: dragons here, updateId is written, client is not
+        Storage.saveClient(chatId, client);
       }
-      List<Client> clientsToRestore = Storage.getOpponentsReadyToRestore();
+      List<Client> clientsToRestore = Storage.getClientsReadyToRestore();
       for (Client client : clientsToRestore) {
         client.hp += 1;
         if (client.hp == client.maxHp) {

@@ -1,5 +1,5 @@
+TODO:
 - Hit in one of three places, block one of three places
-- Add stats
 - Add XP
 - Add levels
 - Add characteristics
@@ -9,4 +9,5 @@
 - Make storage real
 - Injuries when hit by more hp than you have
 
-
+Questions:
+- Should database be stored in git repository? Otherwise we will send messages to everybody once again once you run the script

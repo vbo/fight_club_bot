@@ -10,14 +10,15 @@ import java.util.Map;
 class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
   private static Gson g = new Gson();
-  private static int maxUpdateId = 0;
 
-  static List<Client> getOpponentsReadyToRestore() {
+  static List<Client> getClientsReadyToRestore() {
     long curTime = System.currentTimeMillis() / 1000L;
-    List<Client> result = new LinkedList<Client>();
-    for (String clientJson : clients.values()) {
+    List<Client> result = new LinkedList<>();
+    List<String> chatIds = Logger.getAllClientNames();
+    for (String chatId : chatIds) {
+      String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
-      if (c.status == Client.Status.IDLE 
+      if (c.status == Client.Status.IDLE
           && c.hp < c.maxHp
           && c.lastRestore <= curTime - 1000) {
         result.add(c);
@@ -27,7 +28,9 @@ class Storage {
   }
 
   static Client getOpponentReadyToFight() {
-    for (String clientJson : clients.values()) {
+    List<String> chatIds = Logger.getAllClientNames();
+    for (String chatId : chatIds) {
+      String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
       if (c.status == Client.Status.READY_TO_FIGHT) {
         return c;
@@ -37,7 +40,7 @@ class Storage {
   }
 
   static Client getClientByChatId(int chatId) {
-    String clientJson = clients.get(chatId);
+    String clientJson = Logger.getClient(Integer.toString(chatId));
     if (clientJson == null) {
       return null;
     }
@@ -45,14 +48,18 @@ class Storage {
   }
 
   static void saveClient(int chatId, Client client) {
-    clients.put(chatId, g.toJson(client)); 
+    Logger.saveClient(Integer.toString(chatId), g.toJson(client));
   }
- 
+
   static int getMaxUpdateId() {
-    return maxUpdateId;
+    Integer result = Logger.getIntVar("maxUpdateId");
+    if (result == null) {
+      result = 0;
+    }
+    return result;
   }
 
   static void saveMaxUpdateId(int id) {
-    maxUpdateId = id;
+    Logger.saveIntVar("maxUpdateId", id);
   }
 }

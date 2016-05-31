@@ -1,4 +1,4 @@
 *.swp
 *.swo
 build/
-network.log.txt
+.db
