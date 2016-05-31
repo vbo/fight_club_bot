@@ -11,6 +11,21 @@ class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
   private static Gson g = new Gson();
 
+  static List<Client> getClientsReadyToFight() {
+    long curTime = System.currentTimeMillis() / 1000L;
+    List<Client> result = new LinkedList<>();
+    List<String> chatIds = Logger.getAllClientNames();
+    for (String chatId : chatIds) {
+      String clientJson = Logger.getClient(chatId);
+      Client c = g.fromJson(clientJson, Client.class);
+      if (c.status == Client.Status.READY_TO_FIGHT
+          && c.readyToFightSince <= curTime - 10) {
+        result.add(c);
+      }
+    }
+    return result;
+  }
+
   static List<Client> getClientsReadyToRestore() {
     long curTime = System.currentTimeMillis() / 1000L;
     List<Client> result = new LinkedList<>();

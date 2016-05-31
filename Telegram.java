@@ -31,4 +31,11 @@ class Telegram {
     String last_name;
     String type;
   }
+
+  static class Button {
+    String text;
+    Button(String text) {
+      this.text = text;
+    }
+  }
 }

@@ -24,12 +24,36 @@ class TelegramApi {
   private final String method;
   private final String params;
   HttpURLConnection connection;
-  
-  public static void say(int chatId, String text) {
-    TelegramApi req = new TelegramApi(
-      "sendMessage", 
-      "chat_id=" + chatId + "&text=" + text);
+  private static Gson g = new Gson();
+
+  public static void say(int chatId, String text, String[] buttonTexts) {
+    String params = "chat_id=" + chatId + "&text=" + text
+      + "&parse_mode=Markdown";
+    if (buttonTexts.length > 0) {
+      int numberOfRows = (int)Math.ceil(buttonTexts.length/3.0);
+      Telegram.Button[][] arr = new Telegram.Button[numberOfRows][];
+      int row = 0;
+      int col = 0;
+      for (int i = 0; i < buttonTexts.length; i++) {
+        if (col == 0) {
+          arr[row] = new Telegram.Button[Math.min(3, buttonTexts.length - i)];
+        }
+        arr[row][col] = new Telegram.Button(buttonTexts[i]);
+        col++;
+        if (col == 3) {
+          row++;
+          col = 0;
+        }
+      }
+      params += "&reply_markup={\"keyboard\":" + g.toJson(arr) + "}";
+    }
+    TelegramApi req = new TelegramApi("sendMessage", params);
     req.execute();
+  }
+
+  public static void say(int chatId, String text) {
+    String[] replies = {};
+    say(chatId, text, replies);
   }
 
   public static Telegram.Update[] getUpdates(int offset) {
@@ -37,7 +61,9 @@ class TelegramApi {
       "getUpdates",
       "offset=" + offset);
     String resp = req.execute();
-    Gson g = new Gson();
+    if (resp == "") {
+      return new Telegram.Update[0];
+    }
     Telegram.GetUpdatesResult updates =
         g.fromJson(resp, Telegram.GetUpdatesResult.class);
     return updates.result;
@@ -86,7 +112,7 @@ class TelegramApi {
     wr.close();
   }
 
-  private HttpURLConnection getConnection() 
+  private HttpURLConnection getConnection()
       throws MalformedURLException, IOException, ProtocolException {
     URL url = new URL(URL + TOKEN + "/" + method);
     connection = (HttpURLConnection)url.openConnection();
