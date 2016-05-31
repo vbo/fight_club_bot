@@ -35,6 +35,7 @@ public class Main {
         }
       });
       for (Telegram.Update upd : updates) {
+        final int curTime = (int)(System.currentTimeMillis() / 1000L);
         int chatId = upd.message.chat.id;
         Client client = Storage.getClientByChatId(chatId);
         if (client == null) {
@@ -118,12 +119,16 @@ public class Main {
             if (opponent == null) {
               msg(client, "Searching for a victim...");
               client.status = Client.Status.READY_TO_FIGHT;
-              client.readyToFightSince = (int)(System.currentTimeMillis()/1000L); 
+              client.readyToFightSince = curTime; 
             } else {
               client.status = Client.Status.FIGHTING;
               opponent.status = Client.Status.FIGHTING;
               client.fightingChatId = opponent.chatId;
               opponent.fightingChatId = client.chatId;
+              client.lastFightActivitySince = curTime; 
+              client.timeoutWarningSent = false;
+              opponent.lastFightActivitySince = curTime; 
+              opponent.timeoutWarningSent = false;
               Storage.saveClient(opponent.chatId, opponent);
               msg(client, "You're now fighting with " + opponent.username, fightButtons);
               msg(opponent, "You're now fighting with " + client.username, fightButtons);
@@ -135,12 +140,13 @@ public class Main {
           String where = txt.substring(4, txt.length());
           Client.BodyPart target = getBodyPartFromString(where);
           if (client.status != Client.Status.FIGHTING) {
-            msg(client, "You need to start a fight first");
+            msg(client, "You need to start a fight first.");
           } else if (target == null) {
             msg(client, "Don't know how to hit `" + where + "`");
           } else {
             client.hit = target;
-            client.lastFightActivitySince = (int)(System.currentTimeMillis() / 1000L);
+            client.lastFightActivitySince = curTime;
+            client.timeoutWarningSent = false;
             Client opponent = Storage.getClientByChatId(client.fightingChatId);
             assert opponent != null;
             if (readyToHitBlock(client, opponent)) {
@@ -157,6 +163,7 @@ public class Main {
           } else {
             client.block = target;
             client.lastFightActivitySince = (int)(System.currentTimeMillis() / 1000L);
+            client.timeoutWarningSent = false;
             Client opponent = Storage.getClientByChatId(client.fightingChatId);
             assert opponent != null;
             if (readyToHitBlock(client, opponent)) {
@@ -168,9 +175,9 @@ public class Main {
           if (client.hp > client.maxHp) {
             client.hp = client.maxHp;
           }
-          msg(client, "Potion consumed");
+          msg(client, "Potion consumed.");
         } else {
-          msg(client, "No such command");
+          msg(client, "No such command.");
         }
         maxUpdateId = upd.update_id;
         Storage.saveMaxUpdateId(maxUpdateId);
@@ -179,29 +186,59 @@ public class Main {
       }
       // TODO: seems to be faster to iterate once over all clients - now
       // we iterate 3 times over them
-      List<Client> clientsToRestore = Storage.getClientsReadyToRestore();
-      for (Client client : clientsToRestore) {
-        client.hp++;
-        if (client.hp == client.maxHp) {
-          msg(client, "You are now fully recovered");
+      final int curTime = (int)(System.currentTimeMillis() / 1000L);
+      Storage.forEachClient(new ClientDo() {
+        public void run(Client client) {
+          boolean clientChanged = false;
+          if (client.chatId < 0) {
+            return;
+          }
+          if (client.status == Client.Status.READY_TO_FIGHT
+              && client.readyToFightSince <= curTime - 10) {
+            client.status = Client.Status.FIGHTING;
+            Client bot = new Client(-client.chatId, 
+              botNames[rndInRange(0, botNames.length -1)]
+            );
+            client.fightingChatId = bot.chatId;
+            bot.fightingChatId = client.chatId;
+            bot.status = Client.Status.FIGHTING;
+            generateRandomHitBlock(bot);
+            Storage.saveClient(bot.chatId, bot);
+            client.lastFightActivitySince = curTime; 
+            client.timeoutWarningSent = false;
+            msg(client, "You're now fighting with " + bot.username, fightButtons);
+            msg(client, getClientStats(bot));
+            clientChanged = true;
+          }
+          if (client.status == Client.Status.IDLE
+              && client.hp < client.maxHp
+              && client.lastRestore <= curTime - 1) {
+            client.hp++;
+            client.lastRestore = curTime;
+            if (client.hp == client.maxHp) {
+              msg(client, "You are now fully recovered.");
+            }
+            clientChanged = true;
+          }
+          if (client.status == Client.Status.FIGHTING
+              && !client.timeoutWarningSent
+              && client.lastFightActivitySince <= curTime - 30) {
+            msg(client, "You have 5 seconds to make a decision");
+            client.timeoutWarningSent = true;
+            clientChanged = true;
+          }
+          if (client.status == Client.Status.FIGHTING
+              && client.timeoutWarningSent
+              && client.lastFightActivitySince <= curTime - 50) {
+            Client opponent = Storage.getClientByChatId(client.fightingChatId);
+            finishFight(opponent, client); 
+            clientChanged = true;
+          }
+          if (clientChanged) {
+            Storage.saveClient(client.chatId, client);
+          }
         }
-        Storage.saveClient(client.chatId, client);
-      }
-      List<Client> readyToFightClients = Storage.getClientsWaitingLongToFight();
-      for (Client client : readyToFightClients) {
-        client.status = Client.Status.FIGHTING;
-        Client bot = new Client(-client.chatId, 
-          botNames[rndInRange(0, botNames.length -1)]
-        );
-        client.fightingChatId = bot.chatId;
-        bot.fightingChatId = client.chatId;
-        bot.status = Client.Status.FIGHTING;
-        generateRandomHitBlock(bot);
-        Storage.saveClient(bot.chatId, bot);
-        msg(client, "You're now fighting with " + bot.username, fightButtons);
-        msg(client, getClientStats(bot));
-        Storage.saveClient(client.chatId, client);
-      }
+      });
       Thread.sleep(2000); // 10s
     }
   }
@@ -254,8 +291,8 @@ public class Main {
 
   private static void makeAHit(Client client, Client victim) {
     if (victim.block == client.hit) {
-      msg(victim, "Nice! You have blocked the " + client.username + "'s attack");
-      msg(client, "Damn! Your attack was blocked");
+      msg(victim, "Nice! You have blocked the " + client.username + "'s attack.");
+      msg(client, "Damn! Your attack was blocked.");
       return;
     }
     int clientHits = getDamage(client);
@@ -306,44 +343,44 @@ public class Main {
       generateRandomHitBlock(opponent);
     }
     // Finish fight if needed
-    boolean fightFinished = false;
     Client winner = null;
     Client loser = null;
-    if (client.hp <= 0 && opponent.hp <= 0) {
-      msg(client, "Everybody was defeated in this fight =(");
-      msg(opponent, "Everybody defeated in this fight =(");
-      fightFinished = true;
-      client.hp = 0;
-      opponent.hp = 0;
-    } else {
-      if (client.hp <= 0) {
-        winner = opponent;
-        loser = client;
-      }
-      if (opponent.hp <= 0) {
-        winner = client;
-        loser = opponent;
-      }
+    if (client.hp <= 0) {
+      winner = opponent;
+      loser = client;
+    }
+    if (opponent.hp <= 0) {
+      winner = client;
+      loser = opponent;
     }
     if (winner != null) {
       loser.hp = 0;
-      msg(loser, "You defeated");
-      msg(winner, loser.username + " is dead. Congrats!");
-      fightFinished = true;
-      winner.fightsWon++;
-      winner.exp += 10 * (loser.level + 1);
-      msg(winner, "You gained " + 10 * (loser.level + 1) + " experience.");
+      finishFight(winner, loser);
     }
-    if (winner != null || fightFinished) {
-      client.status = Client.Status.IDLE;
-      opponent.status = Client.Status.IDLE;
-      client.totalFights++;
-      msg(client, "Fight is finished", mainButtons);
-      msg(opponent, "Fight is finished", mainButtons);
-      levelUpIfNeeded(client);
-      levelUpIfNeeded(opponent);
-    }
-    Storage.saveClient(opponent.chatId, opponent);
+  }
+
+  private static void finishFight(Client winner, Client loser) {
+    msg(loser, "You are defeated");
+    msg(winner, loser.username + " is defeated. Congrats!");
+    winner.fightsWon++;
+    winner.totalFights++;
+    loser.totalFights++;
+    int expGained = getExperience(loser);  
+    winner.exp += expGained; 
+    msg(winner, "You gained " + expGained + " experience.");
+    winner.status = Client.Status.IDLE;
+    loser.status = Client.Status.IDLE;
+    msg(winner, "Fight is finished", mainButtons);
+    msg(loser, "Fight is finished", mainButtons);
+    levelUpIfNeeded(winner);
+    levelUpIfNeeded(loser);
+    winner.timeoutWarningSent = false;
+    loser.timeoutWarningSent = false;
+    Storage.saveClient(loser.chatId, loser);
+  }
+
+  private static int getExperience(Client loser) {
+    return 10 * (loser.level + 1);
   }
 
   private static String getClientStats(Client client) {
@@ -406,6 +443,7 @@ class Client {
   int lastRestore = 0;
   int readyToFightSince = 0;
   int lastFightActivitySince = 0;
+  boolean timeoutWarningSent = false;
 
   int totalFights = 0;
   int fightsWon = 0;

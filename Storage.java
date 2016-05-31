@@ -11,35 +11,13 @@ class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
   private static Gson g = new Gson();
 
-  static List<Client> getClientsWaitingLongToFight() {
-    long curTime = System.currentTimeMillis() / 1000L;
-    List<Client> result = new LinkedList<>();
+  static void forEachClient(ClientDo doable) {
     List<String> chatIds = Logger.getAllClientNames();
     for (String chatId : chatIds) {
       String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
-      if (c.status == Client.Status.READY_TO_FIGHT
-          && c.readyToFightSince <= curTime - 10) {
-        result.add(c);
-      }
+      doable.run(c);
     }
-    return result;
-  }
-
-  static List<Client> getClientsReadyToRestore() {
-    long curTime = System.currentTimeMillis() / 1000L;
-    List<Client> result = new LinkedList<>();
-    List<String> chatIds = Logger.getAllClientNames();
-    for (String chatId : chatIds) {
-      String clientJson = Logger.getClient(chatId);
-      Client c = g.fromJson(clientJson, Client.class);
-      if (c.status == Client.Status.IDLE
-          && c.hp < c.maxHp
-          && c.lastRestore <= curTime - 1000) {
-        result.add(c);
-      }
-    }
-    return result;
   }
 
   static Client getOpponentReadyToFight() {
@@ -77,4 +55,8 @@ class Storage {
   static void saveMaxUpdateId(int id) {
     Logger.saveIntVar("maxUpdateId", id);
   }
+}
+
+interface ClientDo {
+  public void run(Client c);
 }
