@@ -1,5 +1,7 @@
 TODO:
 - Timeout for fights when opponent is not active
+- Different mobs with different complexity of fighting
+- More easy mobs
 - When you hit by 0hp - it is a miss, should be written this way
 - Make texts really nice
 - Add leaderboard

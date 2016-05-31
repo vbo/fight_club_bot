@@ -70,7 +70,7 @@ public class Main {
           String newName = txt.substring(10, txt.length());
           if (newName.matches("[A-z0-9]*")) {
             client.username = newName;
-            msg(client, "You name is now " + newName + ".");
+            msg(client, "Your name is now " + newName + ".");
           } else {
             msg(client, "Incorrect name, please make sure it has " +
               "english characters and numbers only");
@@ -140,6 +140,7 @@ public class Main {
             msg(client, "Don't know how to hit `" + where + "`");
           } else {
             client.hit = target;
+            client.lastFightActivitySince = (int)(System.currentTimeMillis() / 1000L);
             Client opponent = Storage.getClientByChatId(client.fightingChatId);
             assert opponent != null;
             if (readyToHitBlock(client, opponent)) {
@@ -155,6 +156,7 @@ public class Main {
             msg(client, "Don't know how to block `" + where + "`");
           } else {
             client.block = target;
+            client.lastFightActivitySince = (int)(System.currentTimeMillis() / 1000L);
             Client opponent = Storage.getClientByChatId(client.fightingChatId);
             assert opponent != null;
             if (readyToHitBlock(client, opponent)) {
@@ -175,6 +177,8 @@ public class Main {
         // TODO: dragons here, updateId is written, client is not
         Storage.saveClient(chatId, client);
       }
+      // TODO: seems to be faster to iterate once over all clients - now
+      // we iterate 3 times over them
       List<Client> clientsToRestore = Storage.getClientsReadyToRestore();
       for (Client client : clientsToRestore) {
         client.hp++;
@@ -183,7 +187,7 @@ public class Main {
         }
         Storage.saveClient(client.chatId, client);
       }
-      List<Client> readyToFightClients = Storage.getClientsReadyToFight();
+      List<Client> readyToFightClients = Storage.getClientsWaitingLongToFight();
       for (Client client : readyToFightClients) {
         client.status = Client.Status.FIGHTING;
         Client bot = new Client(-client.chatId, 
@@ -287,8 +291,8 @@ public class Main {
     // Making hits
     makeAHit(first, second);
     if (second.hp == 0) {
-      msg(first, "Lucky you! You didn't get any damage because your "
-        + second.username + " died.");
+      msg(first, "Lucky you! You didn't get any damage because "
+        + second.username + " defeated.");
       msg(second, "Oops, you didn't have much time to attack.");
     } else {
       makeAHit(second, first);
@@ -297,7 +301,7 @@ public class Main {
     client.block = null;
     if (!isBot) {
       opponent.hit = null;
-      client.block = null;
+      opponent.block = null;
     } else {
       generateRandomHitBlock(opponent);
     }
@@ -306,8 +310,8 @@ public class Main {
     Client winner = null;
     Client loser = null;
     if (client.hp <= 0 && opponent.hp <= 0) {
-      msg(client, "Everybody died in this fight =(");
-      msg(opponent, "Everybody died in this fight =(");
+      msg(client, "Everybody was defeated in this fight =(");
+      msg(opponent, "Everybody defeated in this fight =(");
       fightFinished = true;
       client.hp = 0;
       opponent.hp = 0;
@@ -323,8 +327,8 @@ public class Main {
     }
     if (winner != null) {
       loser.hp = 0;
-      msg(loser, "You died");
-      msg(winner, opponent.username + " is dead. Congrats!");
+      msg(loser, "You defeated");
+      msg(winner, loser.username + " is dead. Congrats!");
       fightFinished = true;
       winner.fightsWon++;
       winner.exp += 10 * (loser.level + 1);
@@ -345,7 +349,7 @@ public class Main {
   private static String getClientStats(Client client) {
     return "*" + client.username + "*\n" 
       + "Status: " + client.status + "\n"
-      + "Level: " + client.level + "\n"
+      + "Level: " + (client.level + 1) + "\n"
       + "Health: " + client.hp + " (out of " + client.maxHp + ")\n"
       + "Damage: 1 - " + client.maxDamage + "\n"
       + "Strength: " + client.strength  + "\n"
@@ -401,6 +405,7 @@ class Client {
   int fightingChatId = 0;
   int lastRestore = 0;
   int readyToFightSince = 0;
+  int lastFightActivitySince = 0;
 
   int totalFights = 0;
   int fightsWon = 0;

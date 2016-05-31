@@ -11,7 +11,7 @@ class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
   private static Gson g = new Gson();
 
-  static List<Client> getClientsReadyToFight() {
+  static List<Client> getClientsWaitingLongToFight() {
     long curTime = System.currentTimeMillis() / 1000L;
     List<Client> result = new LinkedList<>();
     List<String> chatIds = Logger.getAllClientNames();
