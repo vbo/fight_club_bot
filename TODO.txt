@@ -1,6 +1,12 @@
-- Send a message "You found a beggar, who attacked you".
-- Ask for an option "Punch in the face", "Punch in the stomach", "Hit legs" in a nice manner
-- Show results at random (you missed, you got him etc.)
+- Hit in one of three places, block one of three places
+- Add stats
+- Add XP
+- Add levels
+- Add characteristics
+- Add nice buttons
+- Make messaging really nice
+- Add leaderboard
+- Make storage real
 - Injuries when hit by more hp than you have
 
 

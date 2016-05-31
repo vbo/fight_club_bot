@@ -34,7 +34,9 @@ public class Main {
             msg(client, "hi!");
           } else if (txt.equals("stats")) {
             msg(client, "Your hp is " + client.hp + ".\n"
-              + "Status is " + client.status);
+              + "Status is " + client.status + ".\n"
+              + "You won " + client.fightsWon + " battles "
+              + "out of " + client.totalFights + ".");
             //TODO: stats should show your status
           } else if (txt.equals("fight bot")) {
             if (client.status != Client.Status.READY_TO_FIGHT) {
@@ -126,21 +128,32 @@ public class Main {
           opponent.isHitReady = false;
         }
         boolean fightFinished = false;
-        if (client.hp <= 0) {
+        if (client.hp <= 0 && opponent.hp <= 0) {
+          msg(client, "Everybody died in this fight =(");
+          msg(opponent, "Everybody died in this fight =(");
+          fightFinished = true;
           client.hp = 0;
-          msg(client, "You died");
-          msg(opponent, "Opponent is dead. Congrats!");
-          fightFinished = true;
-        }
-        if (opponent.hp <= 0) {
           opponent.hp = 0;
-          msg(opponent, "You died");
-          msg(client, "Opponent is dead. Congrats!");
-          fightFinished = true;
+        } else {
+          if (client.hp <= 0) {
+            client.hp = 0;
+            opponent.fightsWon++;
+            msg(client, "You died");
+            msg(opponent, "Opponent is dead. Congrats!");
+            fightFinished = true;
+          }
+          if (opponent.hp <= 0) {
+            opponent.hp = 0;
+            client.fightsWon++;
+            msg(opponent, "You died");
+            msg(client, "Opponent is dead. Congrats!");
+            fightFinished = true;
+          }
         }
         if (fightFinished) {
           client.status = Client.Status.IDLE;
           opponent.status = Client.Status.IDLE;
+          client.totalFights++;
           msg(client, "Fight is finished");
           msg(opponent, "Fight is finished");
         }
@@ -163,6 +176,8 @@ class Client {
   int maxHp = 45;
   int fightingChatId = 0;
   int lastRestore = 0;
+  int totalFights = 0;
+  int fightsWon = 0;
   boolean isHitReady = false;
   Status status = Client.Status.IDLE;
 
