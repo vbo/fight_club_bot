@@ -83,7 +83,7 @@ public class Main {
             client.fightingChatId = bot.chatId;
             bot.fightingChatId = client.chatId;
             bot.status = Client.Status.FIGHTING;
-            bot.isHitReady = true;
+            generateRandomHitBlock(bot);
             Storage.saveClient(bot.chatId, bot);
             msg(client, "You're now fighting with a bot");
             msg(client, getClientStats(bot));
@@ -108,11 +108,35 @@ public class Main {
               msg(opponent, getClientStats(client));
             }
           }
-        } else if (txt.equals("hit")) {
+        } else if (txt.startsWith("hit ")) {
+          String where = txt.substring(4, txt.length());
+          Client.BodyPart target = getBodyPartFromString(where);
           if (client.status != Client.Status.FIGHTING) {
             msg(client, "You need to start a fight first");
+          } else if (target == null) {
+            msg(client, "Don't know how to hit `" + where + "`");
           } else {
-            handleHit(client);
+            client.hit = target; 
+            Client opponent = Storage.getClientByChatId(client.fightingChatId);
+            assert opponent != null;
+            if (readyToHitBlock(client, opponent)) {
+              handleHit(client, opponent);
+            }
+          }
+        } else if (txt.startsWith("block ")) {
+          String where = txt.substring(6, txt.length());
+          Client.BodyPart target = getBodyPartFromString(where);
+          if (client.status != Client.Status.FIGHTING) {
+            msg(client, "You need to start a fight first");
+          } else if (target == null) {
+            msg(client, "Don't know how to block `" + where + "`");
+          } else {
+            client.block = target;
+            Client opponent = Storage.getClientByChatId(client.fightingChatId);
+            assert opponent != null;
+            if (readyToHitBlock(client, opponent)) {
+              handleHit(client, opponent);
+            }
           }
         } else if (txt.equals("potion")) {
           client.hp = client.maxHp;
@@ -140,6 +164,41 @@ public class Main {
     }
   }
 
+  private static void generateRandomHitBlock(Client client) {
+    Client.BodyPart[] values = Client.BodyPart.values();
+    client.hit = values[rndInRange(0, values.length - 1)];
+    client.block = values[rndInRange(0, values.length - 1)];
+  }
+
+  private static Client.BodyPart getBodyPartFromString(String str) {
+    if (str.equals("head")) {
+      return Client.BodyPart.HEAD;
+    }
+    if (str.equals("torso") || str.equals("body")) {
+      return Client.BodyPart.TORSO;
+    }
+    if (str.equals("legs")) {
+      return Client.BodyPart.LEGS;
+    }
+    return null;
+  }
+
+  private static boolean readyToHitBlock(Client client, Client opponent) {
+    if (client.hit == null) {
+      msg(client, "Where do you want to hit?");
+      return false;
+    }
+    if (client.block == null) {
+      msg(client, "Where do you want to block?");
+      return false;
+    }
+    if (opponent.hit == null || opponent.block == null) {
+      msg(client, "Waiting for opponent...");
+      return false;
+    }
+    return true;
+  }
+
   private static void msg(Client client, String message) {
     if (client.chatId < 0) {
       return; //no message for bots
@@ -148,90 +207,94 @@ public class Main {
   }
 
   private static void makeAHit(Client client, Client victim) {
+    if (victim.block == client.hit) {
+      msg(victim, "Nice! You have blocked the opponent's attack");
+      msg(client, "Damn! Your attack was blocked");
+      return;
+    }
     int clientHits = getDamage(client);
     victim.hp = Math.max(victim.hp - clientHits, 0);
     if (clientHits > client.maxDamage) {
       msg(victim, "Ouch! Opponent makes a critical hit!");
       msg(client, "Wow! You make a critical hit!");
     }
-    msg(victim, "Opponent hits you by " + clientHits + " hp, "
-      + " you have " + victim.hp + " healths left.");
-    msg(client, "You hit oponent by " + clientHits + " hp, "
-      + victim.hp + " healths left.");
+    msg(victim, "Opponent hits your " + client.hit + " by "
+      + clientHits + " hp, you have " + victim.hp + " healths left.");
+    msg(client, "You hit opponent's " + client.hit + " by "
+      + clientHits + " hp, " + victim.hp + " healths left.");
   }
 
-  private static void handleHit(Client client) {
-    assert client != null;
-    Client opponent = Storage.getClientByChatId(client.fightingChatId);
-    assert opponent != null;
+  private static void handleHit(Client client, Client opponent) {
     boolean isBot = opponent.chatId < 0;
-    if (opponent.isHitReady) {
-      Client first = client;
-      Client second = opponent;
-      int clientValue = client.luck;
-      int opponentValue = opponent.luck;
-      if (clientValue == opponentValue) {
-        clientValue = rndInRange(0, 100);
-        opponentValue = rndInRange(0, 100);
-      }
-      if (clientValue > opponentValue) {
-        first = client;
-        second = opponent;
-      } else {
-        first = opponent;
-        second = client;
-      }
-      makeAHit(first, second);
-      if (second.hp == 0) {
-        msg(first, "Lucky you! You didn't get any damage because your opponent died.");
-        msg(second, "Oops, you took the damage first and...");
-      } else {
-        makeAHit(second, first);
-      }
-      client.isHitReady = false;
-      if (!isBot) {
-        opponent.isHitReady = false;
-      }
-      boolean fightFinished = false;
-      Client winner = null;
-      Client loser = null;
-      if (client.hp <= 0 && opponent.hp <= 0) {
-        msg(client, "Everybody died in this fight =(");
-        msg(opponent, "Everybody died in this fight =(");
-        fightFinished = true;
-        client.hp = 0;
-        opponent.hp = 0;
-      } else {
-        if (client.hp <= 0) {
-          winner = opponent;
-          loser = client;
-        }
-        if (opponent.hp <= 0) {
-          winner = client;
-          loser = opponent;
-        }
-      }
-      if (winner != null) {
-        loser.hp = 0;
-        msg(loser, "You died");
-        msg(winner, "Opponent is dead. Congrats!");
-        fightFinished = true;
-        winner.fightsWon++;
-        winner.exp += 10 * (loser.level + 1);
-        msg(winner, "You gained " + 10 * (loser.level + 1) + " experience.");
-      }
-      if (winner != null || fightFinished) {
-        client.status = Client.Status.IDLE;
-        opponent.status = Client.Status.IDLE;
-        client.totalFights++;
-        msg(client, "Fight is finished");
-        msg(opponent, "Fight is finished");
-        levelUpIfNeeded(client);
-        levelUpIfNeeded(opponent);
-      }
+    // Who goes first
+    Client first = client;
+    Client second = opponent;
+    int clientValue = client.luck;
+    int opponentValue = opponent.luck;
+    if (clientValue == opponentValue) {
+      clientValue = rndInRange(0, 100);
+      opponentValue = rndInRange(0, 100);
+    }
+    if (clientValue > opponentValue) {
+      first = client;
+      second = opponent;
     } else {
-      client.isHitReady = true;
-      msg(client, "Waiting for opponent...");
+      first = opponent;
+      second = client;
+    }
+    // Making hits
+    makeAHit(first, second);
+    if (second.hp == 0) {
+      msg(first, "Lucky you! You didn't get any damage because your opponent died.");
+      msg(second, "Oops, you took the damage first and...");
+    } else {
+      makeAHit(second, first);
+    }
+    client.hit = null;
+    client.block = null;
+    if (!isBot) {
+      opponent.hit = null;
+      client.block = null;
+    } else {
+      generateRandomHitBlock(opponent);
+    }
+    // Finish fight if needed
+    boolean fightFinished = false;
+    Client winner = null;
+    Client loser = null;
+    if (client.hp <= 0 && opponent.hp <= 0) {
+      msg(client, "Everybody died in this fight =(");
+      msg(opponent, "Everybody died in this fight =(");
+      fightFinished = true;
+      client.hp = 0;
+      opponent.hp = 0;
+    } else {
+      if (client.hp <= 0) {
+        winner = opponent;
+        loser = client;
+      }
+      if (opponent.hp <= 0) {
+        winner = client;
+        loser = opponent;
+      }
+    }
+    if (winner != null) {
+      loser.hp = 0;
+      msg(loser, "You died");
+      msg(winner, "Opponent is dead. Congrats!");
+      fightFinished = true;
+      winner.fightsWon++;
+      winner.exp += 10 * (loser.level + 1);
+      msg(winner, "You gained " + 10 * (loser.level + 1) + " experience.");
+    }
+    if (winner != null || fightFinished) {
+      client.status = Client.Status.IDLE;
+      opponent.status = Client.Status.IDLE;
+      client.totalFights++;
+      msg(client, "Fight is finished");
+      msg(opponent, "Fight is finished");
+      levelUpIfNeeded(client);
+      levelUpIfNeeded(opponent);
     }
     Storage.saveClient(opponent.chatId, opponent);
   }
@@ -240,7 +303,7 @@ public class Main {
     return "Status:" + client.status + "\n"
       + "Level: " + client.level + "\n"
       + "Health: " + client.hp + " (out of " + client.maxHp + ")\n"
-      + "Damage: 0 - " + client.maxDamage + "\n"
+      + "Damage: 1 - " + client.maxDamage + "\n"
       + "Strength: " + client.strength  + "\n"
       + "Vitality: " + client.vitality + "\n"
       + "Luck: " + client.luck + "\n"
@@ -283,9 +346,11 @@ public class Main {
 
 class Client {
   enum Status {FIGHTING, IDLE, READY_TO_FIGHT};
+  enum BodyPart {HEAD, TORSO, LEGS};
 
   int chatId = 0;
-  boolean isHitReady = false;
+  BodyPart hit = null;
+  BodyPart block = null;
   Status status = Client.Status.IDLE;
   int fightingChatId = 0;
   int lastRestore = 0;

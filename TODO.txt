@@ -1,5 +1,4 @@
 TODO:
-- Hit in one of three places, block one of three places
 - Add nice buttons
 - Make texts really nice
 - Add leaderboard
@@ -8,11 +7,12 @@ TODO:
 - Give bots funny names
 - Show names of people you are fighting with
 - Send "typing" event when waiting for opponents etc.
+- Timeout for fights when opponent is not active
+- When you hit by 0hp - it is a miss, should be written this way
 
 IDEAS:
 - Injuries when hit by more hp than you have
 - Crafting
 - Fight many to many, many to one
+- Sometimes you can miss, espcially if you're aiming head or legs
 
-Questions:
-- Should database be stored in git repository? Otherwise we will send messages to everybody once again once you run the script
