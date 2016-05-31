@@ -147,73 +147,88 @@ public class Main {
     TelegramApi.say(client.chatId, message);
   }
 
+  private static void makeAHit(Client client, Client victim) {
+    int clientHits = getDamage(client);
+    victim.hp = Math.max(victim.hp - clientHits, 0);
+    if (clientHits > client.maxDamage) {
+      msg(victim, "Ouch! Opponent makes a critical hit!");
+      msg(client, "Wow! You make a critical hit!");
+    }
+    msg(victim, "Opponent hits you by " + clientHits + " hp, "
+      + " you have " + victim.hp + " healths left.");
+    msg(client, "You hit oponent by " + clientHits + " hp, "
+      + victim.hp + " healths left.");
+  }
+
   private static void handleHit(Client client) {
     assert client != null;
     Client opponent = Storage.getClientByChatId(client.fightingChatId);
     assert opponent != null;
     boolean isBot = opponent.chatId < 0;
     if (opponent.isHitReady) {
-        int clientHits = getDamage(client);
-        opponent.hp = Math.max(opponent.hp - clientHits, 0);
-        if (clientHits > client.maxDamage) {
-          msg(opponent, "Ouch! Opponent makes a critical hit!");
-          msg(client, "Wow! You make a critical hit!");
+      Client first = client;
+      Client second = opponent;
+      int clientValue = client.luck;
+      int opponentValue = opponent.luck;
+      if (clientValue == opponentValue) {
+        clientValue = rndInRange(0, 100);
+        opponentValue = rndInRange(0, 100);
+      }
+      if (clientValue > opponentValue) {
+        first = client;
+        second = opponent;
+      } else {
+        first = opponent;
+        second = client;
+      }
+      makeAHit(first, second);
+      if (second.hp == 0) {
+        msg(first, "Lucky you! You didn't get any damage because your opponent died.");
+        msg(second, "Oops, you took the damage first and...");
+      } else {
+        makeAHit(second, first);
+      }
+      client.isHitReady = false;
+      if (!isBot) {
+        opponent.isHitReady = false;
+      }
+      boolean fightFinished = false;
+      Client winner = null;
+      Client loser = null;
+      if (client.hp <= 0 && opponent.hp <= 0) {
+        msg(client, "Everybody died in this fight =(");
+        msg(opponent, "Everybody died in this fight =(");
+        fightFinished = true;
+        client.hp = 0;
+        opponent.hp = 0;
+      } else {
+        if (client.hp <= 0) {
+          winner = opponent;
+          loser = client;
         }
-        msg(opponent, "Opponent hits you by " + clientHits + " hp, "
-          + " you have " + client.hp + " healths left.");
-        msg(client, "You hit opponent by " + clientHits + " hp, "
-          + opponent.hp + " healths left.");
-        int opponentHits = getDamage(opponent);
-        client.hp = Math.max(client.hp - opponentHits, 0);
-        if (opponentHits > opponent.maxDamage) {
-          msg(client, "Ouch! Opponent makes a critical hit!");
-          msg(opponent, "Wow! You make a critical hit!");
+        if (opponent.hp <= 0) {
+          winner = client;
+          loser = opponent;
         }
-        msg(client, "Opponent hits you by " + opponentHits + " hp, "
-          + " you have " + client.hp + " healths left.");
-        msg(opponent, "You hit opponent by " + opponentHits + " hp, "
-          + " " + opponent.hp + " healths left.");
-        client.isHitReady = false;
-        if (!isBot) {
-          opponent.isHitReady = false;
-        }
-        boolean fightFinished = false;
-        Client winner = null;
-        Client loser = null;
-        if (client.hp <= 0 && opponent.hp <= 0) {
-          msg(client, "Everybody died in this fight =(");
-          msg(opponent, "Everybody died in this fight =(");
-          fightFinished = true;
-          client.hp = 0;
-          opponent.hp = 0;
-        } else {
-          if (client.hp <= 0) {
-            winner = opponent;
-            loser = client;
-          }
-          if (opponent.hp <= 0) {
-            winner = client;
-            loser = opponent;
-          }
-        }
-        if (winner != null) {
-          loser.hp = 0;
-          msg(loser, "You died");
-          msg(winner, "Opponent is dead. Congrats!");
-          fightFinished = true;
-          winner.fightsWon++;
-          winner.exp += 10 * (loser.level + 1);
-          msg(winner, "You gained " + 10 * (loser.level + 1) + " experience.");
-        }
-        if (winner != null || fightFinished) {
-          client.status = Client.Status.IDLE;
-          opponent.status = Client.Status.IDLE;
-          client.totalFights++;
-          msg(client, "Fight is finished");
-          msg(opponent, "Fight is finished");
-          levelUpIfNeeded(client);
-          levelUpIfNeeded(opponent);
-        }
+      }
+      if (winner != null) {
+        loser.hp = 0;
+        msg(loser, "You died");
+        msg(winner, "Opponent is dead. Congrats!");
+        fightFinished = true;
+        winner.fightsWon++;
+        winner.exp += 10 * (loser.level + 1);
+        msg(winner, "You gained " + 10 * (loser.level + 1) + " experience.");
+      }
+      if (winner != null || fightFinished) {
+        client.status = Client.Status.IDLE;
+        opponent.status = Client.Status.IDLE;
+        client.totalFights++;
+        msg(client, "Fight is finished");
+        msg(opponent, "Fight is finished");
+        levelUpIfNeeded(client);
+        levelUpIfNeeded(opponent);
+      }
     } else {
       client.isHitReady = true;
       msg(client, "Waiting for opponent...");
