@@ -1,13 +1,19 @@
 TODO:
+- Display more stats about your opponent
 - Hit in one of three places, block one of three places
-- Add XP
-- Add levels
-- Add characteristics
 - Add nice buttons
-- Make messaging really nice
+- Make texts really nice
 - Add leaderboard
-- Make storage real
+- During the fight forward the messages to allow chat
+- If no opponent available - take a bot in N seconds automatically
+- Give bots funny names
+- Show names of people you are fighting with
+- Send "typing" event when waiting for opponents etc.
+
+IDEAS:
 - Injuries when hit by more hp than you have
+- Crafting
+- Fight many to many, many to one
 
 Questions:
 - Should database be stored in git repository? Otherwise we will send messages to everybody once again once you run the script
