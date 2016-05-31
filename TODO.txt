@@ -1,5 +1,5 @@
 TODO:
-- Display more stats about your opponent
+- Luck should determine who hits first
 - Hit in one of three places, block one of three places
 - Add nice buttons
 - Make texts really nice

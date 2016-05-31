@@ -33,19 +33,7 @@ public class Main {
         if (txt.equals("hi")) {
           msg(client, "hi!");
         } else if (txt.equals("stats")) {
-          msg(client,
-              "Status:" + client.status + "\n"
-            + "Level: " + client.level + "\n"
-            + "Health: " + client.hp + " (out of " + client.maxHp + ")\n"
-            + "Damage: 0 - " + client.maxDamage + "\n"
-            + "Strength: " + client.strength  + "\n"
-            + "Vitality: " + client.vitality + "\n"
-            + "Luck: " + client.luck + "\n"
-            + "Experience: " + client.exp + " "
-            + "(" + nextExp(client) + " needed to level up)\n"
-            + "Fights won: " + client.fightsWon + " "
-            + "(out of " + client.totalFights + ")\n"
-          );
+          msg(client, getClientStats(client));
           if (client.levelPoints > 0) {
             msg(client, "You have " + client.levelPoints + " unassigned "
               + "level points. Use `inc strength`, `inc vitality`, `inc luck` "
@@ -98,6 +86,7 @@ public class Main {
             bot.isHitReady = true;
             Storage.saveClient(bot.chatId, bot);
             msg(client, "You're now fighting with a bot");
+            msg(client, getClientStats(bot));
           }
         } else if (txt.equals("fight")) {
           if (client.status != Client.Status.IDLE) {
@@ -115,6 +104,8 @@ public class Main {
               Storage.saveClient(opponent.chatId, opponent);
               msg(client, "You're now fighting with a real opponent");
               msg(opponent, "You're now fighting with a real opponent");
+              msg(client, getClientStats(opponent));
+              msg(opponent, getClientStats(client));
             }
           }
         } else if (txt.equals("hit")) {
@@ -163,21 +154,25 @@ public class Main {
     boolean isBot = opponent.chatId < 0;
     if (opponent.isHitReady) {
         int clientHits = getDamage(client);
+        opponent.hp = Math.max(opponent.hp - clientHits, 0);
         if (clientHits > client.maxDamage) {
           msg(opponent, "Ouch! Opponent makes a critical hit!");
           msg(client, "Wow! You make a critical hit!");
         }
-        msg(opponent, "Opponent hits you by " + clientHits + " hp");
-        msg(client, "You hit opponent by " + clientHits + " hp");
+        msg(opponent, "Opponent hits you by " + clientHits + " hp, "
+          + " you have " + client.hp + " healths left.");
+        msg(client, "You hit opponent by " + clientHits + " hp, "
+          + opponent.hp + " healths left.");
         int opponentHits = getDamage(opponent);
+        client.hp = Math.max(client.hp - opponentHits, 0);
         if (opponentHits > opponent.maxDamage) {
           msg(client, "Ouch! Opponent makes a critical hit!");
           msg(opponent, "Wow! You make a critical hit!");
         }
-        msg(client, "Opponent hits you by " + opponentHits + " hp");
-        msg(opponent, "You hit opponent by " + opponentHits + " hp");
-        opponent.hp -= clientHits;
-        client.hp -= opponentHits;
+        msg(client, "Opponent hits you by " + opponentHits + " hp, "
+          + " you have " + client.hp + " healths left.");
+        msg(opponent, "You hit opponent by " + opponentHits + " hp, "
+          + " " + opponent.hp + " healths left.");
         client.isHitReady = false;
         if (!isBot) {
           opponent.isHitReady = false;
@@ -224,6 +219,20 @@ public class Main {
       msg(client, "Waiting for opponent...");
     }
     Storage.saveClient(opponent.chatId, opponent);
+  }
+
+  private static String getClientStats(Client client) {
+    return "Status:" + client.status + "\n"
+      + "Level: " + client.level + "\n"
+      + "Health: " + client.hp + " (out of " + client.maxHp + ")\n"
+      + "Damage: 0 - " + client.maxDamage + "\n"
+      + "Strength: " + client.strength  + "\n"
+      + "Vitality: " + client.vitality + "\n"
+      + "Luck: " + client.luck + "\n"
+      + "Experience: " + client.exp + " "
+      + "(" + nextExp(client) + " needed to level up)\n"
+      + "Fights won: " + client.fightsWon + " "
+      + "(out of " + client.totalFights + ")\n";
   }
 
   private static int getDamage(Client client) {
