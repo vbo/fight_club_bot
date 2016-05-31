@@ -189,6 +189,9 @@ public class Main {
       final int curTime = (int)(System.currentTimeMillis() / 1000L);
       Storage.forEachClient(new ClientDo() {
         public void run(Client client) {
+          if (client == null) {
+            return;
+          }
           boolean clientChanged = false;
           if (client.chatId < 0) {
             return;
@@ -201,6 +204,7 @@ public class Main {
             );
             client.fightingChatId = bot.chatId;
             bot.fightingChatId = client.chatId;
+            // TODO: add randomize based on names
             bot.status = Client.Status.FIGHTING;
             generateRandomHitBlock(bot);
             Storage.saveClient(bot.chatId, bot);
@@ -357,6 +361,7 @@ public class Main {
       loser.hp = 0;
       finishFight(winner, loser);
     }
+    Storage.saveClient(opponent.chatId, opponent);
   }
 
   private static void finishFight(Client winner, Client loser) {
@@ -376,7 +381,6 @@ public class Main {
     levelUpIfNeeded(loser);
     winner.timeoutWarningSent = false;
     loser.timeoutWarningSent = false;
-    Storage.saveClient(loser.chatId, loser);
   }
 
   private static int getExperience(Client loser) {
@@ -460,6 +464,11 @@ class Client {
   int maxDamage;
 
   Client(int chatId, String username) {
+    if (chatId < 0) {
+      vitality = 1;
+      strength = 2;
+      luck = 1;
+    }
     this.chatId = chatId;
     this.username = username;
     setMaxHp();

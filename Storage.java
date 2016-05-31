@@ -16,6 +16,10 @@ class Storage {
     for (String chatId : chatIds) {
       String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
+      if (c == null) {
+        System.out.println(clientJson + " - " + chatId);
+        continue;
+      }
       doable.run(c);
     }
   }
