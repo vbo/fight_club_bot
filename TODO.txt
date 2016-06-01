@@ -1,5 +1,4 @@
 TODO:
-- Refactoring
 - Make texts really nice
 - During the fight forward the messages to allow chat
 - Hint about commands & commands consolidation

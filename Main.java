@@ -25,6 +25,7 @@ public class Main {
 
   public static void main(String[] args)
       throws InterruptedException {
+    System.out.println("Fight Club Server started...");
     while (true) {
       int maxUpdateId = Storage.getMaxUpdateId();
       // TODO: download updates async and put to queue
