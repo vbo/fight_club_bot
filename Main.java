@@ -36,6 +36,7 @@ public class Main {
       });
       // Handle user commands
       for (Telegram.Update upd : updates) {
+        Storage.saveMaxUpdateId(upd.update_id);
         handleUpdate(upd);
       }
       // Background/async operations for each client
@@ -60,18 +61,14 @@ public class Main {
     // Fight bot if for 10 seconds there is no human opponent
     if (client.status == Client.Status.READY_TO_FIGHT
         && client.readyToFightSince <= curTime - 10) {
-      client.status = Client.Status.FIGHTING;
       Client bot = new Client(-client.chatId, 
         botNames[rndInRange(0, botNames.length -1)]
       );
-      client.fightingChatId = bot.chatId;
-      bot.fightingChatId = client.chatId;
-      // TODO: add randomize based on names
-      bot.status = Client.Status.FIGHTING;
+      setFightingStatus(client, bot, curTime);
+      setFightingStatus(bot, client, curTime);
+
       generateRandomHitBlock(bot);
       Storage.saveClient(bot.chatId, bot);
-      client.lastFightActivitySince = curTime; 
-      client.timeoutWarningSent = false;
       msg(client, "You're now fighting with " + bot.username, fightButtons);
       msg(client, getClientStats(bot));
       clientChanged = true;
@@ -119,142 +116,205 @@ public class Main {
       msg(client, "Welcome to the Fight Club!", mainButtons);
       msg(client, "The 1st rule of the Fight Club is you do not talk" +
         " about Fight Club."); 
+      Storage.saveClient(chatId, client);
     }
     String txt = upd.message.text;
+
     if (txt.equals("hi")) {
       msg(client, "hi!", mainButtons);
-    } else if (txt.equals("profile")) {
-      msg(client, getClientStats(client));
-      if (client.levelPoints > 0) {
-        msg(client, "You have " + client.levelPoints + " unassigned "
-          + "level points.", levelPointsButtons);
-      }
-      if (!client.nameChangeHintSent) {
-        msg(client, "You can change your name with the following command "
-          + "`/username newname`");
-        client.nameChangeHintSent = true;
-      }
-    } else if (txt.startsWith("/username ")) {
+      return;
+    }
+    if (txt.equals("profile")) {
+      showProfile(client);
+      return;
+    }
+
+    if (txt.startsWith("/username ")) {
       if (client.status != Client.Status.IDLE) {
         msg(client, "You can change your name only when you're not fighting.");
-      } else {
-        String newName = txt.substring(10, txt.length());
-        if (newName.matches("[A-z0-9]*")) {
-          client.username = newName;
-          msg(client, "Your name is now " + newName + ".");
-        } else {
-          msg(client, "Incorrect name, please make sure it has " +
-            "english characters and numbers only");
-        }
+        return;
       }
-    } else if (txt.startsWith("Improve ")) {
+      String newName = txt.substring(10, txt.length());
+      if (!newName.matches("[A-z0-9]*")) {
+        msg(client, "Incorrect name, please make sure it has " +
+          "english characters and numbers only");
+        return;
+      }
+      changeUserName(client, newName);
+      return;
+    }
+
+    if (txt.startsWith("Improve ")) {
       String what = txt.substring(8, txt.length());
       if (client.levelPoints < 1) {
         msg(client, "You have no level points available. You will have some "
           + "when you level up.", mainButtons);
-      } else {
-        int newValue = 0;
-        if (what.equals("strength")) {
-          newValue = ++client.strength;
-          client.setMaxDamage();
-        } else if (what.equals("vitality")) {
-          newValue = ++client.vitality;
-          client.setMaxHp();
-        } else if (what.equals("luck")) {
-          newValue = ++client.luck;
-        }
-        if (newValue == 0) {
-          msg(client, "Don't know how to improve " + what);
-        } else {
-          client.levelPoints--;
-          msg(client, "You have increased your " + what + ", it is now "
-            + client.strength + ". You have " + client.levelPoints
-            + " more level points.", mainButtons);
-        }
+        return;
       }
-    } else if (txt.equals("fight")) {
-      if (client.status != Client.Status.IDLE) {
-        msg(client, "You're not idle");
-      } else {
-        // TODO: this does linear search through all clients :(
-        Client opponent = Storage.getOpponentReadyToFight();
-        if (opponent == null) {
-          msg(client, "Searching for a victim...");
-          client.status = Client.Status.READY_TO_FIGHT;
-          client.readyToFightSince = curTime; 
-        } else {
-          // TODO: fix simmetrical code
-          client.status = Client.Status.FIGHTING;
-          client.fightingChatId = opponent.chatId;
-          client.lastFightActivitySince = curTime; 
-          client.timeoutWarningSent = false;
+      improveSkill(client, what);
+      return;
+    }
 
-          opponent.status = Client.Status.FIGHTING;
-          opponent.fightingChatId = client.chatId;
-          opponent.lastFightActivitySince = curTime; 
-          opponent.timeoutWarningSent = false;
-
-          Storage.saveClient(opponent.chatId, opponent);
-          msg(client, "You're now fighting with " + opponent.username, fightButtons);
-          msg(opponent, "You're now fighting with " + client.username, fightButtons);
-          msg(client, getClientStats(opponent));
-          msg(opponent, getClientStats(client));
-        }
+    if (txt.equals("fight")) {
+      if (client.status == Client.Status.FIGHTING) {
+        msg(client, "You're already fighiting with somebody.");
+        return;
+      } 
+      if (client.status == Client.Status.READY_TO_FIGHT) {
+        msg(client, "You're already searching for a victim.");
+        return;
       }
-    } else if (txt.startsWith("hit ")) {
+      // TODO: this does linear search through all clients :(
+      Client opponent = Storage.getOpponentReadyToFight();
+      if (opponent == null) {
+        setReadyToFight(client, curTime);
+      } else { 
+        startFightReal(client, opponent, curTime);
+      }
+      return;
+    }
+    if (txt.startsWith("hit ")) {
       String where = txt.substring(4, txt.length());
       Client.BodyPart target = getBodyPartFromString(where);
       if (client.status != Client.Status.FIGHTING) {
         msg(client, "You need to start a fight first.");
-      } else if (target == null) {
+        return;
+      } 
+      if (target == null) {
         msg(client, "Don't know how to hit `" + where + "`");
-      } else {
-        client.hit = target;
-        client.lastFightActivitySince = curTime;
-        client.timeoutWarningSent = false;
-        Client opponent = Storage.getClientByChatId(client.fightingChatId);
-        assert opponent != null;
-        if (readyToHitBlock(client, opponent)) {
-          handleHit(client, opponent);
-        }
+        return;
       }
-    } else if (txt.startsWith("block ")) {
+      setHit(client, target, curTime);
+      return;
+    }
+
+    if (txt.startsWith("block ")) {
       String where = txt.substring(6, txt.length());
       Client.BodyPart target = getBodyPartFromString(where);
       if (client.status != Client.Status.FIGHTING) {
         msg(client, "You need to start a fight first");
-      } else if (target == null) {
+        return;
+      }
+      if (target == null) {
         msg(client, "Don't know how to block `" + where + "`");
-      } else {
-        client.block = target;
-        client.lastFightActivitySince = curTime;
-        client.timeoutWarningSent = false;
-        Client opponent = Storage.getClientByChatId(client.fightingChatId);
-        assert opponent != null;
-        if (readyToHitBlock(client, opponent)) {
-          handleHit(client, opponent);
-        }
+        return;
       }
-    } else if (txt.equals("potion")) {
-      client.hp = client.maxHp;
-      if (client.hp > client.maxHp) {
-        client.hp = client.maxHp;
-      }
-      msg(client, "Potion consumed.");
-    } else {
-      msg(client, "No such command.");
+      setBlock(client, target, curTime);
+      return;
     }
-    // TODO: code above saves opponent sometimes, it's not an atomic operation
-    // with client saving here.
-    Storage.saveMaxUpdateId(upd.update_id);
-    // TODO: dragons here, updateId is written, client is not
-    Storage.saveClient(chatId, client);
+
+    if (txt.equals("potion42")) {
+      consumePotion(client);
+      return;
+    } 
+    // TODO: Add help page link here
+    msg(client, "Use buttons below to make valid actions.");
+  }
+
+  private static void showProfile(Client client) {
+    msg(client, getClientStats(client));
+    if (client.levelPoints > 0) {
+      msg(client, "You have " + client.levelPoints + " unassigned "
+        + "level points.", levelPointsButtons);
+    }
+    if (!client.nameChangeHintSent) {
+      msg(client, "You can change your name with the following command "
+        + "`/username newname`");
+      client.nameChangeHintSent = true;
+    }
+    Storage.saveClient(client.chatId, client);
+  }
+
+  private static void changeUserName(Client client, String newName) {
+    client.username = newName;
+    msg(client, "Your name is now " + newName + ".");
+    Storage.saveClient(client.chatId, client);
   }
 
   private static void generateRandomHitBlock(Client client) {
     Client.BodyPart[] values = Client.BodyPart.values();
     client.hit = values[rndInRange(0, values.length - 1)];
     client.block = values[rndInRange(0, values.length - 1)];
+  }
+
+  private static void improveSkill(Client client, String skill) {
+    int newValue = 0;
+    if (skill.equals("strength")) {
+      newValue = ++client.strength;
+      client.setMaxDamage();
+    } else if (skill.equals("vitality")) {
+      newValue = ++client.vitality;
+      client.setMaxHp();
+    } else if (skill.equals("luck")) {
+      newValue = ++client.luck;
+    }
+    if (newValue == 0) {
+      msg(client, "Don't know how to improve " + skill);
+      return;
+    } 
+    client.levelPoints--;
+    msg(client, "You have increased your " + skill + ", it is now "
+      + client.strength + ". You have " + client.levelPoints
+      + " more level points.", mainButtons);
+    Storage.saveClient(client.chatId, client);
+  }
+
+  private static void setReadyToFight(Client client, int curTime) {
+    // TODO: set ready to fight and save to index
+    client.status = Client.Status.READY_TO_FIGHT;
+    client.readyToFightSince = curTime; 
+    Storage.saveClient(client.chatId, client);
+    msg(client, "Searching for a victim...");
+  }
+
+  private static void startFightReal(Client client, Client opponent, int curTime) {
+    setFightingStatus(client, opponent, curTime);
+    setFightingStatus(opponent, client, curTime);
+
+    // Save automically both of them
+    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(opponent.chatId, opponent);
+    msg(client, "You're now fighting with " + opponent.username, fightButtons);
+    msg(opponent, "You're now fighting with " + client.username, fightButtons);
+    msg(client, getClientStats(opponent));
+    msg(opponent, getClientStats(client));
+  }
+
+
+  private static void setHit(Client client, Client.BodyPart target, int curTime) {
+    client.hit = target;
+    client.lastFightActivitySince = curTime;
+    client.timeoutWarningSent = false;
+    Client opponent = Storage.getClientByChatId(client.fightingChatId);
+    assert opponent != null;
+    if (readyToHitBlock(client, opponent)) {
+      handleHit(client, opponent);
+    }
+    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(opponent.chatId, opponent);
+  }
+
+  private static void setBlock(Client client, Client.BodyPart target, int curTime) {
+    client.block = target;
+    client.lastFightActivitySince = curTime;
+    client.timeoutWarningSent = false;
+    Client opponent = Storage.getClientByChatId(client.fightingChatId);
+    assert opponent != null;
+    if (readyToHitBlock(client, opponent)) {
+      handleHit(client, opponent);
+    }
+    // TODO: it's not an atomic operation to save two clients.
+    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(opponent.chatId, opponent);
+  }
+
+  private static void consumePotion(Client client) {
+    client.hp = client.maxHp;
+    if (client.hp > client.maxHp) {
+      client.hp = client.maxHp;
+    }
+    msg(client, "Potion consumed.");
+    Storage.saveClient(client.chatId, client);
   }
 
   private static Client.BodyPart getBodyPartFromString(String str) {
@@ -374,24 +434,25 @@ public class Main {
   }
 
   private static void finishFight(Client winner, Client loser) {
-    msg(loser, "You are defeated");
-    msg(winner, loser.username + " is defeated. Congrats!");
     winner.fightsWon++;
     winner.totalFights++;
     loser.totalFights++;
     int expGained = getExperience(loser);  
     winner.exp += expGained; 
-    msg(winner, "You gained " + expGained + " experience.");
     winner.status = Client.Status.IDLE;
     loser.status = Client.Status.IDLE;
+    winner.timeoutWarningSent = false;
+    loser.timeoutWarningSent = false;
+
+    msg(loser, "You are defeated");
+    msg(winner, loser.username + " is defeated. Congrats!");
+    msg(winner, "You gained " + expGained + " experience.");
     msg(winner, "Fight is finished. Your health will recover in "
       + (winner.maxHp - winner.hp) + " seconds.", mainButtons);
     msg(loser, "Fight is finished. Your health will recover in "
       + (loser.maxHp - loser.hp) + " seconds.", mainButtons);
     levelUpIfNeeded(winner);
     levelUpIfNeeded(loser);
-    winner.timeoutWarningSent = false;
-    loser.timeoutWarningSent = false;
   }
 
   private static int getExperience(Client loser) {
@@ -428,6 +489,13 @@ public class Main {
       msg(client, "You have achieved level " + client.level + "!\n",
         levelPointsButtons);
     }
+  }
+
+  private static void setFightingStatus(Client client, Client opponent, int curTime) {
+    client.status = Client.Status.FIGHTING;
+    client.fightingChatId = opponent.chatId;
+    client.lastFightActivitySince = curTime; 
+    client.timeoutWarningSent = false;
   }
 
   private static int nextExp(Client client) {
