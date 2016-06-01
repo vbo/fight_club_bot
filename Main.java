@@ -75,11 +75,11 @@ public class Main {
     }
     // Recover hp over time
     if (client.status == Client.Status.IDLE
-        && client.hp < client.maxHp
+        && client.hp < client.getMaxHp()
         && client.lastRestore <= curTime - 1) {
       client.hp++;
       client.lastRestore = curTime;
-      if (client.hp == client.maxHp) {
+      if (client.hp == client.getMaxHp()) {
         msg(client, "You are now fully recovered.");
       }
       clientChanged = true;
@@ -241,10 +241,8 @@ public class Main {
     int newValue = 0;
     if (skill.equals("strength")) {
       newValue = ++client.strength;
-      client.setMaxDamage();
     } else if (skill.equals("vitality")) {
       newValue = ++client.vitality;
-      client.setMaxHp();
     } else if (skill.equals("luck")) {
       newValue = ++client.luck;
     }
@@ -309,9 +307,9 @@ public class Main {
   }
 
   private static void consumePotion(Client client) {
-    client.hp = client.maxHp;
-    if (client.hp > client.maxHp) {
-      client.hp = client.maxHp;
+    client.hp = client.getMaxHp();
+    if (client.hp > client.getMaxHp()) {
+      client.hp = client.getMaxHp();
     }
     msg(client, "Potion consumed.");
     Storage.saveClient(client.chatId, client);
@@ -370,7 +368,7 @@ public class Main {
       msg(client, "You tried hard, but missed " + victim.username + "'s head.");
       return;
     }
-    if (clientHits > client.maxDamage) {
+    if (clientHits > client.getMaxDamage()) {
       msg(victim, "Ouch! " + client.username + " makes a critical hit!");
       msg(client, "Wow! You make a critical hit!");
     }
@@ -448,9 +446,9 @@ public class Main {
     msg(winner, loser.username + " is defeated. Congrats!");
     msg(winner, "You gained " + expGained + " experience.");
     msg(winner, "Fight is finished. Your health will recover in "
-      + (winner.maxHp - winner.hp) + " seconds.", mainButtons);
+      + (winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
     msg(loser, "Fight is finished. Your health will recover in "
-      + (loser.maxHp - loser.hp) + " seconds.", mainButtons);
+      + (loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
     levelUpIfNeeded(winner);
     levelUpIfNeeded(loser);
   }
@@ -463,8 +461,8 @@ public class Main {
     return "*" + client.username + "*\n" 
       + "Status: " + client.status + "\n"
       + "Level: " + (client.level + 1) + "\n"
-      + "Health: " + client.hp + " (out of " + client.maxHp + ")\n"
-      + "Damage: 1 - " + client.maxDamage + "\n"
+      + "Health: " + client.hp + " (out of " + client.getMaxHp() + ")\n"
+      + "Damage: 1 - " + client.getMaxDamage() + "\n"
       + "Strength: " + client.strength  + "\n"
       + "Vitality: " + client.vitality + "\n"
       + "Luck: " + client.luck + "\n"
@@ -477,9 +475,9 @@ public class Main {
   private static int getDamage(Client client) {
     int critRnd = rndInRange(0, 30);
     if (critRnd < client.luck) {
-      return client.maxDamage + rndInRange(0, client.maxDamage);
+      return client.getMaxDamage() + rndInRange(0, client.getMaxDamage());
     }
-    return rndInRange(0, client.maxDamage);
+    return rndInRange(0, client.getMaxDamage());
   }
 
   private static void levelUpIfNeeded(Client client) {
@@ -539,8 +537,6 @@ class Client {
   int levelPoints = 0;
 
   int hp;
-  int maxHp;
-  int maxDamage;
 
   Client(int chatId, String username) {
     if (chatId < 0) {
@@ -550,17 +546,15 @@ class Client {
     }
     this.chatId = chatId;
     this.username = username;
-    setMaxHp();
-    hp = maxHp;
-    setMaxDamage();
+    hp = getMaxHp();
   }
 
-  public void setMaxHp() { // TODO: remove the function
-    maxHp = 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
+  public int getMaxHp() { // TODO: remove the function
+    return 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
   }
 
-  public void setMaxDamage() { // TODO: remove the function
-    maxDamage = strength * Main.HP_UNIT;
+  public int getMaxDamage() { // TODO: remove the function
+    return strength * Main.HP_UNIT;
   }
 }
 
