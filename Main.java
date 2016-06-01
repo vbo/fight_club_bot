@@ -162,7 +162,7 @@ public class Main {
             msg(client, "Don't know how to block `" + where + "`");
           } else {
             client.block = target;
-            client.lastFightActivitySince = (int)(System.currentTimeMillis() / 1000L);
+            client.lastFightActivitySince = curTime;
             client.timeoutWarningSent = false;
             Client opponent = Storage.getClientByChatId(client.fightingChatId);
             assert opponent != null;
@@ -301,6 +301,11 @@ public class Main {
     }
     int clientHits = getDamage(client);
     victim.hp = Math.max(victim.hp - clientHits, 0);
+    if (clientHits == 0) {
+      msg(victim, "Fuf! " + client.username + " missed.");
+      msg(client, "You tried hard, but missed " + victim.username + "'s head.");
+      return;
+    }
     if (clientHits > client.maxDamage) {
       msg(victim, "Ouch! " + client.username + " makes a critical hit!");
       msg(client, "Wow! You make a critical hit!");
@@ -333,7 +338,7 @@ public class Main {
     makeAHit(first, second);
     if (second.hp == 0) {
       msg(first, "Lucky you! You didn't get any damage because "
-        + second.username + " defeated.");
+        + second.username + " is defeated.");
       msg(second, "Oops, you didn't have much time to attack.");
     } else {
       makeAHit(second, first);
@@ -375,8 +380,10 @@ public class Main {
     msg(winner, "You gained " + expGained + " experience.");
     winner.status = Client.Status.IDLE;
     loser.status = Client.Status.IDLE;
-    msg(winner, "Fight is finished", mainButtons);
-    msg(loser, "Fight is finished", mainButtons);
+    msg(winner, "Fight is finished. Your health will recover in "
+      + (winner.maxHp - winner.hp) + " seconds.", mainButtons);
+    msg(loser, "Fight is finished. Your health will recover in "
+      + (loser.maxHp - loser.hp) + " seconds.", mainButtons);
     levelUpIfNeeded(winner);
     levelUpIfNeeded(loser);
     winner.timeoutWarningSent = false;

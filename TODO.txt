@@ -1,12 +1,9 @@
 TODO:
-- Write a message that health will be restored soon
-- Different mobs with different complexity of fighting
-- More easy mobs
-- When you hit by 0hp - it is a miss, should be written this way
 - Make texts really nice
 - Add leaderboard
 - During the fight forward the messages to allow chat
 - Send "typing" event when waiting for opponents etc.
+- Different mobs with different complexity of fighting
 
 IDEAS:
 - Injuries when hit by more hp than you have
