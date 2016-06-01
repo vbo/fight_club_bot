@@ -28,12 +28,14 @@ public class Main {
     int maxUpdateId = Storage.getMaxUpdateId();
     System.out.println("Starting from updateId " + maxUpdateId);
     while (true) {
+      // TODO: download updates async and put to queue
       Telegram.Update[] updates = TelegramApi.getUpdates(maxUpdateId + 1);
       Arrays.sort(updates, new Comparator<Telegram.Update>() {
         public int compare(Telegram.Update u1, Telegram.Update u2) {
           return u1.update_id - u2.update_id;
         }
       });
+      // Handle user commands
       for (Telegram.Update upd : updates) {
         final int curTime = (int)(System.currentTimeMillis() / 1000L);
         int chatId = upd.message.chat.id;
@@ -67,68 +69,74 @@ public class Main {
         } else if (txt.startsWith("/username ")) {
           if (client.status != Client.Status.IDLE) {
             msg(client, "You can change your name only when you're not fighting.");
-          }
-          String newName = txt.substring(10, txt.length());
-          if (newName.matches("[A-z0-9]*")) {
-            client.username = newName;
-            msg(client, "Your name is now " + newName + ".");
           } else {
-            msg(client, "Incorrect name, please make sure it has " +
-              "english characters and numbers only");
+            String newName = txt.substring(10, txt.length());
+            if (newName.matches("[A-z0-9]*")) {
+              client.username = newName;
+              msg(client, "Your name is now " + newName + ".");
+            } else {
+              msg(client, "Incorrect name, please make sure it has " +
+                "english characters and numbers only");
+            }
           }
+        // TODO: Improve handling is the same for different stats
         } else if (txt.equals("Improve strength")) {
           if (client.levelPoints < 1) {
             msg(client, "You have no level points available. You will have some "
               + "when you level up.", mainButtons);
-            return;
+          } else {
+            client.strength++;
+            client.setMaxDamage();
+            client.levelPoints--;
+            msg(client, "You have increased your strength, it is now "
+              + client.strength + ". You have " + client.levelPoints
+              + " more level points.", mainButtons);
           }
-          client.strength++;
-          client.setMaxDamage();
-          client.levelPoints--;
-          msg(client, "You have increased your strength, it is now "
-            + client.strength + ". You have " + client.levelPoints
-            + " more level points.", mainButtons);
         } else if (txt.equals("Improve vitality")) {
           if (client.levelPoints < 1) {
             msg(client, "You have no level points available. You will have some "
               + "when you level up.", mainButtons);
-            return;
+          } else {
+            client.vitality++;
+            client.setMaxHp();
+            client.levelPoints--;
+            msg(client, "You have increased your vitality, it is now "
+              + client.vitality + ". You have " + client.levelPoints
+              + " more level points.", mainButtons);
           }
-          client.vitality++;
-          client.setMaxHp();
-          client.levelPoints--;
-          msg(client, "You have increased your vitality, it is now "
-            + client.vitality + ". You have " + client.levelPoints
-            + " more level points.", mainButtons);
         } else if (txt.equals("Improve luck")) {
           if (client.levelPoints < 1) {
             msg(client, "You have no level points available. You will have some "
               + "when you level up.", mainButtons);
-            return;
+          } else {
+            client.luck++;
+            client.levelPoints--;
+            msg(client, "You have increased luck, it is now "
+              + client.luck + ". You have " + client.levelPoints
+              + " more level points.", mainButtons);
           }
-          client.luck++;
-          client.levelPoints--;
-          msg(client, "You have increased luck, it is now "
-            + client.luck + ". You have " + client.levelPoints
-            + " more level points.", mainButtons);
         } else if (txt.equals("fight")) {
           if (client.status != Client.Status.IDLE) {
             msg(client, "You're not idle");
           } else {
+            // TODO: this does linear search through all clients :(
             Client opponent = Storage.getOpponentReadyToFight();
             if (opponent == null) {
               msg(client, "Searching for a victim...");
               client.status = Client.Status.READY_TO_FIGHT;
               client.readyToFightSince = curTime; 
             } else {
+              // TODO: fix simmetrical code
               client.status = Client.Status.FIGHTING;
-              opponent.status = Client.Status.FIGHTING;
               client.fightingChatId = opponent.chatId;
-              opponent.fightingChatId = client.chatId;
               client.lastFightActivitySince = curTime; 
               client.timeoutWarningSent = false;
+
+              opponent.status = Client.Status.FIGHTING;
+              opponent.fightingChatId = client.chatId;
               opponent.lastFightActivitySince = curTime; 
               opponent.timeoutWarningSent = false;
+
               Storage.saveClient(opponent.chatId, opponent);
               msg(client, "You're now fighting with " + opponent.username, fightButtons);
               msg(opponent, "You're now fighting with " + client.username, fightButtons);
@@ -180,22 +188,24 @@ public class Main {
           msg(client, "No such command.");
         }
         maxUpdateId = upd.update_id;
+        // TODO: code above saves opponent sometimes, it's not an atomic operation
+        // with client saving here.
         Storage.saveMaxUpdateId(maxUpdateId);
         // TODO: dragons here, updateId is written, client is not
         Storage.saveClient(chatId, client);
       }
-      // TODO: seems to be faster to iterate once over all clients - now
-      // we iterate 3 times over them
+      // Background/async operations for each client
       final int curTime = (int)(System.currentTimeMillis() / 1000L);
       Storage.forEachClient(new ClientDo() {
         public void run(Client client) {
           if (client == null) {
-            return;
+            return; // this shouldn't happen
+          }
+          if (client.chatId < 0) {
+            return; // bots have no async logic as of now
           }
           boolean clientChanged = false;
-          if (client.chatId < 0) {
-            return;
-          }
+          // Fight bot if for 10 seconds there is no human opponent
           if (client.status == Client.Status.READY_TO_FIGHT
               && client.readyToFightSince <= curTime - 10) {
             client.status = Client.Status.FIGHTING;
@@ -214,6 +224,7 @@ public class Main {
             msg(client, getClientStats(bot));
             clientChanged = true;
           }
+          // Recover hp over time
           if (client.status == Client.Status.IDLE
               && client.hp < client.maxHp
               && client.lastRestore <= curTime - 1) {
@@ -224,6 +235,7 @@ public class Main {
             }
             clientChanged = true;
           }
+          // Check for slow acting (warning)
           if (client.status == Client.Status.FIGHTING
               && !client.timeoutWarningSent
               && client.lastFightActivitySince <= curTime - 30) {
@@ -231,6 +243,7 @@ public class Main {
             client.timeoutWarningSent = true;
             clientChanged = true;
           }
+          // Check for slow acting (finish fight)
           if (client.status == Client.Status.FIGHTING
               && client.timeoutWarningSent
               && client.lastFightActivitySince <= curTime - 50) {
@@ -238,11 +251,13 @@ public class Main {
             finishFight(opponent, client); 
             clientChanged = true;
           }
+          // Save client only if changed (optimization)
           if (clientChanged) {
             Storage.saveClient(client.chatId, client);
           }
         }
       });
+
       Thread.sleep(2000); // 10s
     }
   }
