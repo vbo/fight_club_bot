@@ -44,13 +44,8 @@ public class Main {
           client = new Client(chatId,
             upd.message.from.first_name + " " + upd.message.from.last_name);
           msg(client, "Welcome to the Fight Club!", mainButtons);
-          msg(client, "The 1st rule of the Fight Club is - DO talk about the Fight Club. "
-            + "We just started, please feel free to invite your friends if you like it.");
-          msg(client, "The 2nd rule of the fight club is - you have to fight to get "
-            + "experience and improve your character.");
-          msg(client, "We have also picked up a name for you: " + client.username 
-            + ". If you don't like it - please change it in your profile.");
-          msg(client, "That's it, enjoy!");
+          msg(client, "The 1st rule of the Fight Club is you do not talk" +
+            " about Fight Club."); 
         }
         String txt = upd.message.text;
         if (txt.equals("hi")) {
@@ -79,41 +74,30 @@ public class Main {
                 "english characters and numbers only");
             }
           }
-        // TODO: Improve handling is the same for different stats
-        } else if (txt.equals("Improve strength")) {
+        } else if (txt.startsWith("Improve ")) {
+          String what = txt.substring(8, txt.length());
           if (client.levelPoints < 1) {
             msg(client, "You have no level points available. You will have some "
               + "when you level up.", mainButtons);
           } else {
-            client.strength++;
-            client.setMaxDamage();
-            client.levelPoints--;
-            msg(client, "You have increased your strength, it is now "
-              + client.strength + ". You have " + client.levelPoints
-              + " more level points.", mainButtons);
-          }
-        } else if (txt.equals("Improve vitality")) {
-          if (client.levelPoints < 1) {
-            msg(client, "You have no level points available. You will have some "
-              + "when you level up.", mainButtons);
-          } else {
-            client.vitality++;
-            client.setMaxHp();
-            client.levelPoints--;
-            msg(client, "You have increased your vitality, it is now "
-              + client.vitality + ". You have " + client.levelPoints
-              + " more level points.", mainButtons);
-          }
-        } else if (txt.equals("Improve luck")) {
-          if (client.levelPoints < 1) {
-            msg(client, "You have no level points available. You will have some "
-              + "when you level up.", mainButtons);
-          } else {
-            client.luck++;
-            client.levelPoints--;
-            msg(client, "You have increased luck, it is now "
-              + client.luck + ". You have " + client.levelPoints
-              + " more level points.", mainButtons);
+            int newValue = 0;
+            if (what.equals("strength")) {
+              newValue = ++client.strength;
+              client.setMaxDamage();
+            } else if (what.equals("vitality")) {
+              newValue = ++client.vitality;
+              client.setMaxHp();
+            } else if (what.equals("luck")) {
+              newValue = ++client.luck;
+            }
+            if (newValue == 0) {
+              msg(client, "Don't know how to improve " + what);
+            } else {
+              client.levelPoints--;
+              msg(client, "You have increased your " + what + ", it is now "
+                + client.strength + ". You have " + client.levelPoints
+                + " more level points.", mainButtons);
+            }
           }
         } else if (txt.equals("fight")) {
           if (client.status != Client.Status.IDLE) {
@@ -498,11 +482,11 @@ class Client {
     setMaxDamage();
   }
 
-  public void setMaxHp() {
+  public void setMaxHp() { // TODO: remove the function
     maxHp = 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
   }
 
-  public void setMaxDamage() {
+  public void setMaxDamage() { // TODO: remove the function
     maxDamage = strength * Main.HP_UNIT;
   }
 }

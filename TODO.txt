@@ -1,11 +1,14 @@
 TODO:
+- Refactoring
 - Make texts really nice
-- Add leaderboard
 - During the fight forward the messages to allow chat
-- Send "typing" event when waiting for opponents etc.
-- Different mobs with different complexity of fighting
+- Hint about commands & commands consolidation
+- Design a Help page + command in the beginning
 
 IDEAS:
+- Different mobs with different complexity of fighting
+- Send "typing" event when waiting for opponents etc.
+- Add leaderboard / stats
 - Injuries when hit by more hp than you have
 - Crafting
 - Fight many to many, many to one
