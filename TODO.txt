@@ -1,8 +1,9 @@
 TODO:
-- Make texts really nice
 - During the fight forward the messages to allow chat
 - Hint about commands & commands consolidation
 - Design a Help page + command in the beginning
+- Generate fantasy names
+- Make release
 
 IDEAS:
 - Different mobs with different complexity of fighting

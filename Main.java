@@ -63,7 +63,7 @@ public class Main {
     if (client.status == Client.Status.READY_TO_FIGHT
         && client.readyToFightSince <= curTime - 10) {
       Client bot = new Client(-client.chatId, 
-        botNames[rndInRange(0, botNames.length -1)]
+        botNames[Utils.rndInRange(0, botNames.length -1)]
       );
       setFightingStatus(client, bot, curTime);
       setFightingStatus(bot, client, curTime);
@@ -234,8 +234,8 @@ public class Main {
 
   private static void generateRandomHitBlock(Client client) {
     Client.BodyPart[] values = Client.BodyPart.values();
-    client.hit = values[rndInRange(0, values.length - 1)];
-    client.block = values[rndInRange(0, values.length - 1)];
+    client.hit = values[Utils.rndInRange(0, values.length - 1)];
+    client.block = values[Utils.rndInRange(0, values.length - 1)];
   }
 
   private static void improveSkill(Client client, String skill) {
@@ -357,26 +357,32 @@ public class Main {
   }
 
   private static void makeAHit(Client client, Client victim) {
+    String hitPhrase = "";
     if (victim.block == client.hit) {
-      msg(victim, "Nice! You have blocked the " + client.username + "'s attack.");
-      msg(client, "Damn! Your attack was blocked.");
+      hitPhrase =
+        PhraseGenerator.getBlockPhrase(client, victim, client.hit);  
+      msg(victim, hitPhrase);
+      msg(client, hitPhrase);
       return;
     }
     int clientHits = getDamage(client);
     victim.hp = Math.max(victim.hp - clientHits, 0);
     if (clientHits == 0) {
-      msg(victim, "Fuf! " + client.username + " missed.");
-      msg(client, "You tried hard, but missed " + victim.username + "'s head.");
+      hitPhrase =
+        PhraseGenerator.getMissPhrase(client, victim, client.hit);
+      msg(victim, hitPhrase);
+      msg(client, hitPhrase);
       return;
     }
-    if (clientHits > client.getMaxDamage()) {
-      msg(victim, "Ouch! " + client.username + " makes a critical hit!");
-      msg(client, "Wow! You make a critical hit!");
-    }
-    msg(victim, client.username + " hits your " + client.hit + " by "
-      + clientHits + " hp, you have now " + victim.hp + " hp left.");
-    msg(client, "You hit " + victim.username + "'s " + client.hit + " by "
-      + clientHits + " hp, " + victim.hp + " hp left.");
+    hitPhrase = PhraseGenerator.getHitPhrase(
+      client,
+      victim,
+      client.hit,
+      clientHits > client.getMaxDamage(),
+      clientHits
+    );
+    msg(victim, hitPhrase);
+    msg(client, hitPhrase);
   }
 
   private static void handleHit(Client client, Client opponent) {
@@ -387,8 +393,8 @@ public class Main {
     int clientValue = client.luck;
     int opponentValue = opponent.luck;
     if (clientValue == opponentValue) {
-      clientValue = rndInRange(0, 100);
-      opponentValue = rndInRange(0, 100);
+      clientValue = Utils.rndInRange(0, 100);
+      opponentValue = Utils.rndInRange(0, 100);
     }
     if (clientValue > opponentValue) {
       first = client;
@@ -474,11 +480,11 @@ public class Main {
   }
 
   private static int getDamage(Client client) {
-    int critRnd = rndInRange(0, 30);
+    int critRnd = Utils.rndInRange(0, 30);
     if (critRnd < client.luck) {
-      return client.getMaxDamage() + rndInRange(0, client.getMaxDamage());
+      return client.getMaxDamage() + Utils.rndInRange(0, client.getMaxDamage());
     }
-    return rndInRange(0, client.getMaxDamage());
+    return Utils.rndInRange(0, client.getMaxDamage());
   }
 
   private static void levelUpIfNeeded(Client client) {
@@ -504,11 +510,6 @@ public class Main {
       result = result + levelDelta * (int)Math.pow(2, i);
     }
     return result;
-  }
-
-  private static int rndInRange(int min, int max) {
-    int range = (max - min) + 1;
-    return (int)(Math.random() * range) + min;
   }
 }
 
