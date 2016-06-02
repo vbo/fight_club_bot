@@ -208,6 +208,19 @@ public class Main {
       consumePotion(client);
       return;
     } 
+
+    if (txt.startsWith("/tell ")) {
+      if (client.status != Client.Status.FIGHTING) {
+        msg(client, "You can talk to people only when you are fighting");
+        return;
+      }
+      String message = txt.substring(6, txt.length());
+      Client opponent = Storage.getClientByChatId(client.fightingChatId);
+      //TODO: misteriously whispered, screamed, mumbled...
+      msg(opponent, client.username + " said: " + message);
+      return;
+    }
+
     // TODO: Add help page link here
     msg(client, "Use buttons below to make valid actions.");
   }
