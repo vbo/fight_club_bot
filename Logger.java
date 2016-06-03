@@ -7,6 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import java.lang.Runtime;
 
 import java.util.LinkedList;
 import java.util.Date;
@@ -19,12 +23,33 @@ class Logger {
   private static String logsFile;
   private static String clientsPath;
   private static String varsPath;
+  private static String exceptionsLog;
   private static final String EXT = ".db";
   private static PrintWriter logsWriter;
 
+  static void logException(Exception e)
+    throws IOException {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    e.printStackTrace(pw);
+    PrintWriter out = new PrintWriter(exceptionsLog);
+    String stackTrace = sw.toString();
+    out.println(stackTrace);
+    out.close();
+    log(stackTrace);
+    String[] cmd = {
+      "/bin/sh",
+      "-c",
+      "cat " + exceptionsLog + " | sendmail " +
+      "lennytmp@gmail.com borodin.vadim@gmail.com"
+    };
+    Runtime.getRuntime().exec(cmd);
+  }
+
   static void setDbPath(String path) {
-    logsFile = path + "/network";
     clientsPath = path + "/clients/";
+    exceptionsLog = path + "/exceptions_log";
+    logsFile = path + "/network";
     varsPath = path + "/vars/";
   }
 

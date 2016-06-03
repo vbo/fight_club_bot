@@ -1,0 +1,5 @@
+java.lang.NullPointerException
+	at ChatBot.PhraseGenerator.getWisdom(PhraseGenerator.java:6)
+	at ChatBot.Main.handleUpdate(Main.java:144)
+	at ChatBot.Main.main(Main.java:48)
+

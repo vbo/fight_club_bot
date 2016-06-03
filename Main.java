@@ -22,9 +22,10 @@ public class Main {
   private static final String[] botNames = {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
+  private static final boolean isProd = false;
 
   public static void main(String[] args)
-      throws InterruptedException {
+      throws InterruptedException, Exception {
     if (args.length < 1) {
       System.out.println("Usage: ChatBot.jar path/to/db");
       System.exit(0);
@@ -32,35 +33,43 @@ public class Main {
     Logger.setDbPath(args[0]);
     System.out.println("Fight Club Server started...");
     while (true) {
-      int maxUpdateId = Storage.getMaxUpdateId();
-      // TODO: download updates async and put to queue
-      Telegram.Update[] updates = TelegramApi.getUpdates(maxUpdateId + 1);
-      Arrays.sort(updates, new Comparator<Telegram.Update>() {
-        public int compare(Telegram.Update u1, Telegram.Update u2) {
-          return u1.update_id - u2.update_id;
+      try {
+        int maxUpdateId = Storage.getMaxUpdateId();
+        // TODO: download updates async and put to queue
+        Telegram.Update[] updates = TelegramApi.getUpdates(maxUpdateId + 1);
+        Arrays.sort(updates, new Comparator<Telegram.Update>() {
+          public int compare(Telegram.Update u1, Telegram.Update u2) {
+            return u1.update_id - u2.update_id;
+          }
+        });
+        // Handle user commands
+        for (Telegram.Update upd : updates) {
+          Storage.saveMaxUpdateId(upd.update_id);
+          if (upd.message != null && upd.message.text != null) {
+            handleUpdate(upd);
+          }
         }
-      });
-      // Handle user commands
-      for (Telegram.Update upd : updates) {
-        Storage.saveMaxUpdateId(upd.update_id);
-        if (upd.message != null && upd.message.text != null) {
-          handleUpdate(upd);
+        // Background/async operations for each client
+        final int curTime = (int)(System.currentTimeMillis() / 1000L);
+        Storage.forEachClient(new ClientDo() {
+          public void run(Client client) {
+            if (client == null) {
+              return; // this shouldn't happen
+            }
+            if (client.chatId < 0) {
+              return; // bots have no async logic as of now
+            }
+            handleClientAsync(client, curTime);
+          }
+        });
+      } catch (Exception e) {
+        if (isProd) {
+          Logger.logException(e);
+        } else {
+          throw e;
         }
       }
-      // Background/async operations for each client
-      final int curTime = (int)(System.currentTimeMillis() / 1000L);
-      Storage.forEachClient(new ClientDo() {
-        public void run(Client client) {
-          if (client == null) {
-            return; // this shouldn't happen
-          }
-          if (client.chatId < 0) {
-            return; // bots have no async logic as of now
-          }
-          handleClientAsync(client, curTime);
-        }
-      });
-      Thread.sleep(2000); // 2s 
+      Thread.sleep(500); // 2s 
     }
   }
 

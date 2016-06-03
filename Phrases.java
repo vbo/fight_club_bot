@@ -210,7 +210,7 @@ class Phrases {
       + "no path and leave a trail.", 
     "Older men declare war. But it is youth that must fight and die.",
     "Whenever you are confronted with an opponent. Conquer him with love.",
-    "Swearing doesn’t make your argument valid; it just tells the other "
+    "Swearing doesn't make your argument valid; it just tells the other "
       + "person you have lost your class and control.",
     "I'm tired today, you should come later on."
   };
