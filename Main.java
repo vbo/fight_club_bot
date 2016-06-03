@@ -22,7 +22,7 @@ public class Main {
   private static final String[] botNames = {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
-  private static final boolean isProd = false;
+  private static boolean isProd = false;
 
   public static void main(String[] args)
       throws InterruptedException, Exception {
@@ -31,6 +31,11 @@ public class Main {
       System.exit(0);
     }
     Logger.setDbPath(args[0]);
+
+    if (args.length > 1 && args[1].equals("PROD")) {
+      isProd = true;
+    }
+
     System.out.println("Fight Club Server started...");
     while (true) {
       try {
