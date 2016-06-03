@@ -10,7 +10,7 @@ then
 	mkdir -p "db/clients"
 	mkdir -p "db/vars"
 
-	java -cp "./build/classes/$JAVA_PATH_SEP./lib/gson-2.6.2.jar" ChatBot.Main db PROD
+	java -cp "./build/classes/$JAVA_PATH_SEP./lib/gson-2.6.2.jar" ChatBot.Main db PROD 2>&1 > ~/fight_club_bot_stdout.log
 
-	echo "Respawning ChatBot process..." | sendmail lennytmp@gmail.com borodin.vadim@gmail.com
+	echo "Respawning ChatBot process..." | /usr/sbin/sendmail lennytmp@gmail.com borodin.vadim@gmail.com
 fi
