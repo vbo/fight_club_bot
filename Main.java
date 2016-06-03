@@ -38,7 +38,9 @@ public class Main {
       // Handle user commands
       for (Telegram.Update upd : updates) {
         Storage.saveMaxUpdateId(upd.update_id);
-        handleUpdate(upd);
+        if (upd.message != null && upd.message.text != null) {
+          handleUpdate(upd);
+        }
       }
       // Background/async operations for each client
       final int curTime = (int)(System.currentTimeMillis() / 1000L);
@@ -464,10 +466,14 @@ public class Main {
     msg(loser, "You are defeated");
     msg(winner, loser.username + " is defeated. Congrats!");
     msg(winner, "You gained " + expGained + " experience.");
-    msg(winner, "Fight is finished. Your health will recover in "
-      + (winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
-    msg(loser, "Fight is finished. Your health will recover in "
-      + (loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
+    if (winner.hp < winner.getMaxHp()) {
+      msg(winner, "Fight is finished. Your health will recover in "
+        + (winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
+    }
+    if (loser.hp < loser.getMaxHp()) {
+      msg(loser, "Fight is finished. Your health will recover in "
+        + (loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
+    }
     levelUpIfNeeded(winner);
     levelUpIfNeeded(loser);
   }

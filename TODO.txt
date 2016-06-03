@@ -1,8 +1,5 @@
 TODO:
 - Test fight timeout
-- Handle update is null when image is sent
-- "/tell" - no such command
-- During the fight forward the messages to allow chat
 - Hint about commands & commands consolidation
 - Design a Help page + command in the beginning
 - Generate fantasy names
