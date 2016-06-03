@@ -209,15 +209,14 @@ public class Main {
       return;
     } 
 
-    if (txt.startsWith("/tell ")) {
+    if (txt.startsWith("/say")) {
       if (client.status != Client.Status.FIGHTING) {
         msg(client, "You can talk to people only when you are fighting");
         return;
       }
       String message = txt.substring(6, txt.length());
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
-      //TODO: misteriously whispered, screamed, mumbled...
-      msg(opponent, client.username + " said: " + message);
+      msg(opponent, PhraseGenerator.getSayingPhrase(client, message));
       return;
     }
 

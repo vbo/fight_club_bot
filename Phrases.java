@@ -65,6 +65,7 @@ class Phrases {
       "has thoughtfully smashed his face",
       "slammed his nose with the heel",
       "caressed his cheek",
+      "bluntly bit his nose",
       "desparately punched his eyebrow",
       "stroked his eye",
       "made a quick punch in his throat",
@@ -85,6 +86,7 @@ class Phrases {
     {
       "subtly made a hit in the legs",
       "heartlessly broke his knee",
+      "grossly bit opponent's <censored>",
       "gently caressed his toe",
       "unthinkingly stepped on his foot",
       "cowardly damaged his <censored>",
@@ -112,6 +114,7 @@ class Phrases {
       "to caress opponent's cheek",
       "to punched the competitor's eyebrow",
       "to stroke the enemy's eye",
+      "to bite competitor's nose",
       "to make a quick punch in the rival's throat",
       "to poke a finger in the opponent's mouth",
       "to punch the competitor's forehead",
@@ -129,6 +132,7 @@ class Phrases {
       "to make a hit in the opponent's legs",
       "to brake the enemy's knee",
       "to wound the rival's toe",
+      "to hit opponent's <censored>",
       "to step on the competitor's foot",
       "to damage the opponent's <censored>",
       "to rudely bit the rival's ankle",
@@ -163,5 +167,16 @@ class Phrases {
     "lubberly slipped and wasn't able to hit",
     "got distracted and fell asleep",
     "uncouthly sprained the ankle and missed"
+  };
+
+  static final String[] said = {
+    "misteriously whispered",
+    "mumbled",
+    "whispered",
+    "screamed",
+    "yelled",
+    "said smiling wildly",
+    "made a grin and said",
+    "said shyly"
   };
 }

@@ -39,4 +39,9 @@ class PhraseGenerator {
       + "[[" + victim.hp + "/" + victim.getMaxHp() + "]]";
     return result;
   }
+
+
+  static String getSayingPhrase(Client teller, String msg) {
+    return teller.username + " " + Utils.getRnd(Phrases.said) + ": " + msg;
+  }
 };
