@@ -1,6 +1,12 @@
 package ChatBot;
 
 class PhraseGenerator {
+  static String getWisdom(Client client) {
+    return Utils.getRnd(Phrases.wisdomIntro) + " "
+      + Utils.getRnd(Phrases.wisdoms);
+  }
+
+
   static String getHitPhrase(Client offender, Client victim, Client.BodyPart part,
       boolean critHit, int damage) {
     String result = 

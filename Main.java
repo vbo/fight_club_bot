@@ -11,13 +11,13 @@ import java.util.Map;
 
 public class Main {
   public static final int HP_UNIT = 5;
-  private static final String[] mainButtons = {"fight", "profile"};
+  private static final String[] mainButtons = {"fight", "profile", "wiseman"};
   private static final String[] fightButtons = {
     "hit head", "hit torso", "hit legs",
     "block head", "block torso", "block legs"
   };
   private static final String[] levelPointsButtons = {
-    "Improve strength", "Improve vitality", "Improve luck"
+    "improve strength", "improve vitality", "improve luck"
   };
   private static final String[] botNames = {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
@@ -25,6 +25,11 @@ public class Main {
 
   public static void main(String[] args)
       throws InterruptedException {
+    if (args.length < 1) {
+      System.out.println("Usage: ChatBot.jar path/to/db");
+      System.exit(0);
+    }
+    Logger.setDbPath(args[0]);
     System.out.println("Fight Club Server started...");
     while (true) {
       int maxUpdateId = Storage.getMaxUpdateId();
@@ -69,12 +74,12 @@ public class Main {
       );
       setFightingStatus(client, bot, curTime);
       setFightingStatus(bot, client, curTime);
-
       generateRandomHitBlock(bot);
       Storage.saveClient(bot.chatId, bot);
-      msg(client, "You're now fighting with " + bot.username, fightButtons);
+      Storage.saveClient(client.chatId, client);
+
+      msg(client, "You're now fighting with " + bot.username + ".", fightButtons);
       msg(client, getClientStats(bot));
-      clientChanged = true;
     }
     // Recover hp over time
     if (client.status == Client.Status.IDLE
@@ -85,26 +90,27 @@ public class Main {
       if (client.hp == client.getMaxHp()) {
         msg(client, "You are now fully recovered.");
       }
-      clientChanged = true;
+      Storage.saveClient(client.chatId, client);
     }
     // Check for slow acting (warning)
     if (client.status == Client.Status.FIGHTING
+        && (client.hit == null || client.block == null)
         && !client.timeoutWarningSent
         && client.lastFightActivitySince <= curTime - 30) {
-      msg(client, "You have 5 seconds to make a decision");
       client.timeoutWarningSent = true;
-      clientChanged = true;
+      Storage.saveClient(client.chatId, client);
+
+      msg(client, "You have 5 seconds to make a decision.");
     }
     // Check for slow acting (finish fight)
     if (client.status == Client.Status.FIGHTING
         && client.timeoutWarningSent
         && client.lastFightActivitySince <= curTime - 50) {
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
+      msg(client, "Timeout!");
+      msg(opponent, "Timeout!");
       finishFight(opponent, client); 
-      clientChanged = true;
-    }
-    // Save client only if changed (optimization)
-    if (clientChanged) {
+      Storage.saveClient(opponent.chatId, opponent);
       Storage.saveClient(client.chatId, client);
     }
   }
@@ -117,17 +123,25 @@ public class Main {
       client = new Client(chatId,
         upd.message.from.first_name + " " + upd.message.from.last_name);
       msg(client, "Welcome to the Fight Club!", mainButtons);
-      msg(client, "The 1st rule of the Fight Club is you do not talk" +
-        " about Fight Club."); 
       Storage.saveClient(chatId, client);
     }
     String txt = upd.message.text;
+
+    if (txt.equals("/start")) {
+      return;
+    }
 
     if (txt.equals("hi")) {
       msg(client, "hi!", mainButtons);
       return;
     }
-    if (txt.equals("profile")) {
+
+    if (txt.equals("wiseman") || txt.equals("/wiseman")) {
+      msg(client, PhraseGenerator.getWisdom(client)); 
+      return;
+    }
+
+    if (txt.equals("profile") || txt.equals("/profile")) {
       showProfile(client);
       return;
     }
@@ -140,14 +154,14 @@ public class Main {
       String newName = txt.substring(10, txt.length());
       if (!newName.matches("[A-z0-9]*")) {
         msg(client, "Incorrect name, please make sure it has " +
-          "english characters and numbers only");
+          "english characters and numbers only.");
         return;
       }
       changeUserName(client, newName);
       return;
     }
 
-    if (txt.startsWith("Improve ")) {
+    if (txt.startsWith("improve ")) {
       String what = txt.substring(8, txt.length());
       if (client.levelPoints < 1) {
         msg(client, "You have no level points available. You will have some "
@@ -158,7 +172,7 @@ public class Main {
       return;
     }
 
-    if (txt.equals("fight")) {
+    if (txt.equals("fight") || txt.equals("/fight")) {
       if (client.status == Client.Status.FIGHTING) {
         msg(client, "You're already fighiting with somebody.");
         return;
@@ -180,11 +194,11 @@ public class Main {
       String where = txt.substring(4, txt.length());
       Client.BodyPart target = getBodyPartFromString(where);
       if (client.status != Client.Status.FIGHTING) {
-        msg(client, "You need to start a fight first.");
+        msg(client, "You need to start a fight first.", mainButtons);
         return;
       } 
       if (target == null) {
-        msg(client, "Don't know how to hit `" + where + "`");
+        msg(client, "Don't know how to hit `" + where + "`.");
         return;
       }
       setHit(client, target, curTime);
@@ -195,30 +209,29 @@ public class Main {
       String where = txt.substring(6, txt.length());
       Client.BodyPart target = getBodyPartFromString(where);
       if (client.status != Client.Status.FIGHTING) {
-        msg(client, "You need to start a fight first");
+        msg(client, "You need to start a fight first.");
         return;
       }
       if (target == null) {
-        msg(client, "Don't know how to block `" + where + "`");
+        msg(client, "Don't know how to block `" + where + "`.");
         return;
       }
       setBlock(client, target, curTime);
       return;
     }
 
-    if (txt.equals("potion42")) {
+    if (txt.equals("/potion42")) {
       consumePotion(client);
       return;
     } 
 
-    if (txt.startsWith("/say")) {
-      if (client.status != Client.Status.FIGHTING) {
-        msg(client, "You can talk to people only when you are fighting");
-        return;
-      }
-      String message = txt.substring(6, txt.length());
+    if (client.status == Client.Status.FIGHTING &&
+        !txt.startsWith("/")) {
+      String message = txt; 
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
-      msg(opponent, PhraseGenerator.getSayingPhrase(client, message));
+      String sayingPhrase = PhraseGenerator.getSayingPhrase(client, message);
+      msg(client, sayingPhrase);
+      msg(opponent, sayingPhrase);
       return;
     }
 
@@ -233,8 +246,8 @@ public class Main {
         + "level points.", levelPointsButtons);
     }
     if (!client.nameChangeHintSent) {
-      msg(client, "You can change your name with the following command "
-        + "`/username newname`");
+      msg(client, "You can change your name with the following command \n"
+        + "`/username newname`.");
       client.nameChangeHintSent = true;
     }
     Storage.saveClient(client.chatId, client);
@@ -262,7 +275,7 @@ public class Main {
       newValue = ++client.luck;
     }
     if (newValue == 0) {
-      msg(client, "Don't know how to improve " + skill);
+      msg(client, "Don't know how to improve " + skill + ".");
       return;
     } 
     client.levelPoints--;
@@ -287,8 +300,8 @@ public class Main {
     // Save automically both of them
     Storage.saveClient(client.chatId, client);
     Storage.saveClient(opponent.chatId, opponent);
-    msg(client, "You're now fighting with " + opponent.username, fightButtons);
-    msg(opponent, "You're now fighting with " + client.username, fightButtons);
+    msg(client, "You're now fighting with " + opponent.username + ".", fightButtons);
+    msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
     msg(client, getClientStats(opponent));
     msg(opponent, getClientStats(client));
   }
@@ -463,16 +476,20 @@ public class Main {
     winner.timeoutWarningSent = false;
     loser.timeoutWarningSent = false;
 
-    msg(loser, "You are defeated");
+    msg(loser, "You are defeated.");
     msg(winner, loser.username + " is defeated. Congrats!");
     msg(winner, "You gained " + expGained + " experience.");
     if (winner.hp < winner.getMaxHp()) {
       msg(winner, "Fight is finished. Your health will recover in "
         + (winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
+    } else {
+      msg(winner, "Fight is finished.", mainButtons);
     }
     if (loser.hp < loser.getMaxHp()) {
       msg(loser, "Fight is finished. Your health will recover in "
         + (loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
+    } else {
+      msg(loser, "Fight is finished.", mainButtons);
     }
     levelUpIfNeeded(winner);
     levelUpIfNeeded(loser);
@@ -484,7 +501,6 @@ public class Main {
 
   private static String getClientStats(Client client) {
     return "*" + client.username + "*\n" 
-      + "Status: " + client.status + "\n"
       + "Level: " + (client.level + 1) + "\n"
       + "Health: " + client.hp + " (out of " + client.getMaxHp() + ")\n"
       + "Damage: 1 - " + client.getMaxDamage() + "\n"

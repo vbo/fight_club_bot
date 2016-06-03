@@ -179,4 +179,39 @@ class Phrases {
     "made a grin and said",
     "said shyly"
   };
+
+  static final String[] wisdomIntro = {
+    "The old man ignores you for an hour, but then suddenly groans:",
+    "When you approached the old man's home, it was empty. "
+      + "You found a note left for someone:",
+    "The wiseman is looking at you with contempt:",
+    "The wizard wasn't in a good mood today, he shouts at you:"
+  };
+  
+  static final String[] wisdoms = {
+    "There is an ancient story about a man... He had a very silly name."
+      + "Once he typed `/username God` and became a God.",
+    "There is a legend about two fighters, they were skilfull and "
+      + " clever, but didn't know how to talk. Once one of them "
+      + "started typing a message during the fight and it was "
+      + "sent to the opponent. And that's how people started talking.",
+    "Once upon a time there was a fighter of incredible strength. "
+      + "They say he could defeat any opponent with a single hit.",
+    "Not many of us still remember, but once there lived a great "
+      + "warrior. Thousands tried to kill him, but nobody could. They "
+      + "say the secret was set in his incredible vitality.",
+    "Have you ever thought what luck really is? Some consider that a "
+      + "lucky person acts first, others think that a lucky "
+      + "person is more likely to make a perfect painful hit.",
+    "The Gods? There are two of them I heard, one has a very long beard "
+      + "and another one is very smart. Well, Gods are always smart, "
+      + "arent't they?",
+    "Do not go where the path may lead, go instead where there is "
+      + "no path and leave a trail.", 
+    "Older men declare war. But it is youth that must fight and die.",
+    "Whenever you are confronted with an opponent. Conquer him with love.",
+    "Swearing doesn’t make your argument valid; it just tells the other "
+      + "person you have lost your class and control.",
+    "I'm tired today, you should come later on."
+  };
 }

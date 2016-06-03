@@ -9,4 +9,4 @@ elif [ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]; then
     JAVA_PATH_SEP=";"
 fi
 
-java -cp "./build/classes/$JAVA_PATH_SEP./lib/gson-2.6.2.jar" ChatBot.Main
+java -cp "./build/classes/$JAVA_PATH_SEP./lib/gson-2.6.2.jar" ChatBot.Main db

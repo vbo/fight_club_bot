@@ -1,11 +1,9 @@
 TODO:
-- Test fight timeout
-- Hint about commands & commands consolidation
-- Design a Help page + command in the beginning
-- Generate fantasy names
 - Make release
+- Transactions
 
 IDEAS:
+- Generate fantasy names
 - Different mobs with different complexity of fighting
 - Send "typing" event when waiting for opponents etc.
 - Add leaderboard / stats

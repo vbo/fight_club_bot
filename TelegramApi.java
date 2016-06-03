@@ -20,6 +20,7 @@ import com.google.gson.JsonDeserializationContext;
 
 class TelegramApi {
   private static final String TOKEN = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
+  private static final String TOKEN_DEV = "202943285:AAGPfX6FqP2GSjR3BRCZd3BD0eDKjeL_CF4";
   private static final String URL = "https://api.telegram.org/bot";
   private final String method;
   private final String params;
