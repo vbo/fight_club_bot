@@ -23,6 +23,7 @@ public class Main {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
   private static boolean isProd = false;
+  private static int adminChatId = 145731396;
 
   public static void main(String[] args)
       throws InterruptedException, Exception {
@@ -137,6 +138,9 @@ public class Main {
       client = new Client(chatId,
         upd.message.from.first_name + " " + upd.message.from.last_name);
       msg(client, "Welcome to the Fight Club!", mainButtons);
+      if (isProd) {
+        msg(adminChatId, "New user: " + client.username);
+      }
       Storage.saveClient(chatId, client);
     }
     String txt = upd.message.text;
@@ -388,6 +392,10 @@ public class Main {
 
   private static void msg(Client client, String message) {
     msg(client, message, new String[] {});
+  }
+
+  private static void msg(int chatId, String message) {
+    TelegramApi.say(chatId, message, new String[] {});
   }
 
   private static void msg(Client client, String message, String[] replies) {
