@@ -155,7 +155,7 @@ class Phrases {
     "skillfully blocked the hit",
     "masterfully avoided the blow",
     "stepped back to avoid the hit",
-    "quickly dodged.",
+    "quickly dodged",
     "rapidly darted away",
     "cautiously rushed away",
     "anticipated it and was able to get away with no damage",

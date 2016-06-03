@@ -1,6 +1,6 @@
 TODO:
-- Make release
 - Transactions
+- Better logs (no empty getUpdates)
 
 IDEAS:
 - Generate fantasy names
