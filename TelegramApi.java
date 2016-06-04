@@ -77,7 +77,9 @@ class TelegramApi {
   private TelegramApi(String method, String params) {
     this.method = method;
     this.params = params;
-    Logger.log("request: " + method + "?" + params);
+    if (!method.equals("getUpdates")) {
+      Logger.log("request: " + method + "?" + params);
+    }
   }
 
   public String execute() {
@@ -89,7 +91,9 @@ class TelegramApi {
     } catch (Exception e) {
       System.out.println("Error while handling http request " + e);
     }
-    Logger.log("response: " + result);
+    if (result.equals( "{\"ok\":true,\"result\":[]}")) {
+      Logger.log("response: " + result);
+    }
     return result;
   }
 

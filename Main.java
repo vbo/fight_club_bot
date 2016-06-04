@@ -85,7 +85,8 @@ public class Main {
     if (client.status == Client.Status.READY_TO_FIGHT
         && client.readyToFightSince <= curTime - 10) {
       Client bot = new Client(-client.chatId, 
-        botNames[Utils.rndInRange(0, botNames.length -1)]
+        botNames[Utils.rndInRange(0, botNames.length -1)],
+        client
       );
       setFightingStatus(client, bot, curTime);
       setFightingStatus(bot, client, curTime);
@@ -533,17 +534,21 @@ public class Main {
   }
 
   private static String getClientStats(Client client) {
-    return "*" + client.username + "*\n" 
+    String result = "*" + client.username + "*\n" 
       + "Level: " + (client.level + 1) + "\n"
       + "Health: " + client.hp + " (out of " + client.getMaxHp() + ")\n"
       + "Damage: 1 - " + client.getMaxDamage() + "\n"
       + "Strength: " + client.strength  + "\n"
       + "Vitality: " + client.vitality + "\n"
-      + "Luck: " + client.luck + "\n"
-      + "Experience: " + client.exp + " "
-      + "(" + nextExp(client) + " needed to level up)\n"
-      + "Fights won: " + client.fightsWon + " "
-      + "(out of " + client.totalFights + ")\n";
+      + "Luck: " + client.luck;
+    if (client.chatId > 0) {  
+      result += "\n"
+        + "Experience: " + client.exp + " "
+        + "(" + nextExp(client) + " needed to level up)\n"
+        + "Fights won: " + client.fightsWon + " "
+        + "(out of " + client.totalFights + ")\n";
+    }
+    return result;
   }
 
   private static int getDamage(Client client) {
@@ -608,21 +613,42 @@ class Client {
   int hp;
 
   Client(int chatId, String username) {
-    if (chatId < 0) {
-      vitality = 1;
-      strength = 2;
-      luck = 1;
-    }
     this.chatId = chatId;
     this.username = username;
     hp = getMaxHp();
   }
 
-  public int getMaxHp() { // TODO: remove the function
+  Client(int chatId, String username, Client opponent) {
+    this(chatId, username);
+    if (opponent.level == 0) {
+      vitality = 1;
+      strength = 2;
+      luck = 1;
+    } else {
+      int k = 1;
+      if (Utils.rndInRange(0, opponent.totalFights) > opponent.fightsWon) {
+        k *= -1;
+      }
+      this.level = Math.max(opponent.level + k*Utils.rndInRange(0, 4), 0);
+      for (int i = 0; i < this.level; i++) {
+        int ch = Utils.rndInRange(1, 3);
+        if (ch == 1) {
+          this.strength++;
+        } else if (ch == 2) {
+          this.vitality++;
+        } else {
+          this.luck++;
+        }
+      }
+    }
+    hp = getMaxHp();
+  }
+
+  public int getMaxHp() {
     return 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
   }
 
-  public int getMaxDamage() { // TODO: remove the function
+  public int getMaxDamage() {
     return strength * Main.HP_UNIT;
   }
 }
