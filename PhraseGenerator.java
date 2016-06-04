@@ -46,7 +46,8 @@ class PhraseGenerator {
   }
 
 
-  static String getSayingPhrase(Client teller, String msg) {
-    return teller.username + " " + Utils.getRnd(Phrases.said) + ": " + msg;
+  static String getSayingPhrase(Client teller, String msg, Client listener) {
+    return teller.username + " " + Utils.getRnd(Phrases.said) + " "
+      + listener.username + ": " + msg;
   }
 };

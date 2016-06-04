@@ -1,6 +1,5 @@
 TODO:
 - Sending messages in other languages (RU)
-- Sending messages for everybody who was active within 2 minutes
 - Transactions
 - Better logs (no empty getUpdates)
 

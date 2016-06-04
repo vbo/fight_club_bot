@@ -6,8 +6,10 @@ import java.lang.Thread;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Main {
   public static final int HP_UNIT = 5;
@@ -22,8 +24,8 @@ public class Main {
   private static final String[] botNames = {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
+  private static Set<Integer> activeChats = new HashSet<>();
   private static boolean isProd = false;
-  private static int adminChatId = 145731396;
 
   public static void main(String[] args)
       throws InterruptedException, Exception {
@@ -135,18 +137,23 @@ public class Main {
     final int curTime = (int)(System.currentTimeMillis() / 1000L);
     int chatId = upd.message.chat.id;
     Client client = Storage.getClientByChatId(chatId);
-    if (client == null) {
+    boolean newClient = client == null;
+    if (newClient) {
       String username = upd.message.from.first_name;
       if (upd.message.from.last_name != null) {
         username = username + " " + upd.message.from.last_name;
       }
       client = new Client(chatId, username);
-      msg(client, "Welcome to the Fight Club!", mainButtons);
-      if (isProd) {
-        msg(adminChatId, "New user: " + client.username);
-      }
-      Storage.saveClient(chatId, client);
     }
+    client.lastActivity = curTime;
+    activeChats.add(chatId);
+    Storage.saveClient(chatId, client);
+
+    if (newClient) {
+      msg(client, "Welcome to the Fight Club!", mainButtons);
+      sendToActiveUsers(client.username + " joined the Fight Club!", curTime);
+    }
+
     String txt = upd.message.text;
 
     if (txt.equals("/start")) {
@@ -259,14 +266,38 @@ public class Main {
         !txt.startsWith("/")) {
       String message = txt; 
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
-      String sayingPhrase = PhraseGenerator.getSayingPhrase(client, message);
+      String sayingPhrase = PhraseGenerator.getSayingPhrase(client, message, opponent);
       msg(client, sayingPhrase);
       msg(opponent, sayingPhrase);
       return;
     }
 
+    if (!txt.startsWith("/")) {
+      String message = client.username + ": " + txt; 
+      int numListeners = sendToActiveUsers(message, curTime) - 1;
+      if (numListeners == 0) {
+        msg(client, "Everyone is far away so you were not heard :(");
+      }
+      return;
+    }
+
     // TODO: Add help page link here
     msg(client, "Use buttons below to make valid actions.");
+  }
+
+  // returns number of people who heard you
+  private static int sendToActiveUsers(String message, int curTime) {
+    int numListeners = 0;
+    for (int recepientChatId : activeChats) {
+      Client recepient = Storage.getClientByChatId(recepientChatId);
+      if (recepient.lastActivity > curTime - 600) {
+        msg(recepient, message);
+        numListeners++;
+      } else {
+        activeChats.remove(recepientChatId);
+      }
+    }
+    return numListeners; 
   }
 
   private static void showProfile(Client client) {
@@ -598,6 +629,7 @@ class Client {
   int lastRestore = 0;
   int readyToFightSince = 0;
   int lastFightActivitySince = 0;
+  int lastActivity = 0;
   boolean timeoutWarningSent = false;
 
   int totalFights = 0;
