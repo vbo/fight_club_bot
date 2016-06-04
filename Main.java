@@ -135,8 +135,11 @@ public class Main {
     int chatId = upd.message.chat.id;
     Client client = Storage.getClientByChatId(chatId);
     if (client == null) {
-      client = new Client(chatId,
-        upd.message.from.first_name + " " + upd.message.from.last_name);
+      String username = upd.message.from.first_name;
+      if (upd.message.from.last_name != "") {
+        username = username + " " + upd.message.from.last_name;
+      }
+      client = new Client(chatId, username);
       msg(client, "Welcome to the Fight Club!", mainButtons);
       if (isProd) {
         msg(adminChatId, "New user: " + client.username);
