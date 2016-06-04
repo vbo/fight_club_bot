@@ -3,12 +3,12 @@ TODO:
 - Better logs (no empty getUpdates)
 
 IDEAS:
-- Generate fantasy names
-- Different mobs with different complexity of fighting
-- Send "typing" event when waiting for opponents etc.
 - Add leaderboard / stats
-- Injuries when hit by more hp than you have
 - Crafting
+- Different mobs with different complexity of fighting
 - Fight many to many, many to one
-- Sometimes you can miss, espcially if you're aiming head or legs
+- Generate fantasy names
+- Injuries when hit by more hp than you have
 - It would be very nice to show messages more slowly, as if somebody's typing them
+- Send "typing" event when waiting for opponents etc.
+- Sometimes you can miss, espcially if you're aiming head or legs
