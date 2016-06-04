@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -288,14 +289,18 @@ public class Main {
   // returns number of people who heard you
   private static int sendToActiveUsers(String message, int curTime) {
     int numListeners = 0;
+    List<Integer> passive = new LinkedList<>();
     for (int recepientChatId : activeChats) {
       Client recepient = Storage.getClientByChatId(recepientChatId);
       if (recepient.lastActivity > curTime - 600) {
         msg(recepient, message);
         numListeners++;
       } else {
-        activeChats.remove(recepientChatId);
+        passive.add(recepientChatId);
       }
+    }
+    for (int passiveChatId : passive) {
+      activeChats.remove(passiveChatId);
     }
     return numListeners; 
   }
