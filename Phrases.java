@@ -170,14 +170,14 @@ class Phrases {
   };
 
   static final String[] said = {
-    "misteriously whispered",
-    "mumbled",
-    "whispered",
-    "screamed",
-    "yelled",
-    "said smiling wildly",
-    "made a grin and said",
-    "said shyly"
+    "misteriously whispered to",
+    "mumbled to",
+    "whispered to",
+    "screamed at",
+    "yelled at",
+    "smiling wildly told",
+    "made a grin and told",
+    "said shyly to"
   };
 
   static final String[] wisdomIntro = {
@@ -192,9 +192,14 @@ class Phrases {
     "There is an ancient story about a man... He had a very silly name. "
       + "Once he typed `/username God` and became a God.",
     "There is a legend about two fighters, they were skilfull and "
-      + " clever, but didn't know how to talk. Once one of them "
-      + "started typing a message during the fight and it was "
-      + "sent to the opponent. And that's how people started talking.",
+      + " clever, but didn't know how to talk to each other. Once "
+      + "one of them started typing a message during the fight and it was "
+      + "sent to the opponent, and only the opponent only. And so "
+      + "fighters began to talk",
+    "Do you hear the voices sometimes? I do, everybody does. Gods once "
+      + "told me that you can hear them only if you were active "
+      + "in the last few minutes. If you go away - the voices will "
+      + "leave you alone as well.",
     "Once upon a time there was a fighter of incredible strength. "
       + "They say he could defeat any opponent with a single hit.",
     "Not many of us still remember, but once there lived a great "
