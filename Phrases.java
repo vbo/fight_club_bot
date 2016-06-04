@@ -189,7 +189,7 @@ class Phrases {
   };
   
   static final String[] wisdoms = {
-    "There is an ancient story about a man... He had a very silly name."
+    "There is an ancient story about a man... He had a very silly name. "
       + "Once he typed `/username God` and became a God.",
     "There is a legend about two fighters, they were skilfull and "
       + " clever, but didn't know how to talk. Once one of them "
