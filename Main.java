@@ -238,6 +238,19 @@ public class Main {
       return;
     } 
 
+    if (txt.equals("/retreat42")) {
+      if (client.status != Client.Status.FIGHTING) {
+        return;
+      }
+      Client opponent = Storage.getClientByChatId(client.fightingChatId);
+      msg(client, "Retreat42!");
+      msg(opponent, "Retreat42!");
+      finishFight(opponent, client); 
+      Storage.saveClient(opponent.chatId, opponent);
+      Storage.saveClient(client.chatId, client);
+      return;
+    } 
+
     if (client.status == Client.Status.FIGHTING &&
         !txt.startsWith("/")) {
       String message = txt; 
