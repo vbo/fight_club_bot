@@ -149,11 +149,6 @@ public class Main {
       return;
     }
 
-    if (txt.equals("hi")) {
-      msg(client, "hi!", mainButtons);
-      return;
-    }
-
     if (txt.equals("wiseman") || txt.equals("/wiseman")) {
       msg(client, PhraseGenerator.getWisdom(client)); 
       return;
