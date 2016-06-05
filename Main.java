@@ -567,7 +567,7 @@ public class Main {
     }
     if (loser.hp < loser.getMaxHp()) {
       msg(loser, "Fight is finished. Your health will recover in "
-        + (loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
+        + 3*(loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
     } else {
       msg(loser, "Fight is finished.", mainButtons);
     }
