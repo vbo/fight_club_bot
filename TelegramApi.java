@@ -19,8 +19,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonDeserializationContext;
 
 class TelegramApi {
-  private static final String TOKEN = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
-  private static final String TOKEN_DEV = "202943285:AAGPfX6FqP2GSjR3BRCZd3BD0eDKjeL_CF4";
+  static final String TOKEN_PROD = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
+  static final String TOKEN_DEV = "202943285:AAGPfX6FqP2GSjR3BRCZd3BD0eDKjeL_CF4";
+  static String token = TOKEN_DEV;
   private static final String URL = "https://api.telegram.org/bot";
   private final String method;
   private final String params;
@@ -113,13 +114,13 @@ class TelegramApi {
   private void sendRequest() throws IOException {
     DataOutputStream wr = new DataOutputStream(
         connection.getOutputStream());
-    wr.writeBytes(params);
+    wr.write(params.getBytes("UTF-8"));
     wr.close();
   }
 
   private HttpURLConnection getConnection()
       throws MalformedURLException, IOException, ProtocolException {
-    URL url = new URL(URL + TOKEN + "/" + method);
+    URL url = new URL(URL + token + "/" + method);
     connection = (HttpURLConnection)url.openConnection();
     connection.setRequestMethod("POST");
     connection.setRequestProperty("Content-Type",

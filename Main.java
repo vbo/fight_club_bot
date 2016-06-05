@@ -27,6 +27,7 @@ public class Main {
   };
   private static Set<Integer> activeChats = new HashSet<>();
   private static boolean isProd = false;
+  private static int curTime;
 
   public static void main(String[] args)
       throws InterruptedException, Exception {
@@ -38,6 +39,7 @@ public class Main {
 
     if (args.length > 1 && args[1].equals("PROD")) {
       isProd = true;
+      TelegramApi.token = TelegramApi.TOKEN_PROD;
     }
 
     System.out.println("Fight Club Server started...");
@@ -59,7 +61,7 @@ public class Main {
           }
         }
         // Background/async operations for each client
-        final int curTime = (int)(System.currentTimeMillis() / 1000L);
+        curTime = (int)(System.currentTimeMillis() / 1000L);
         Storage.forEachClient(new ClientDo() {
           public void run(Client client) {
             if (client == null) {
@@ -68,7 +70,7 @@ public class Main {
             if (client.chatId < 0) {
               return; // bots have no async logic as of now
             }
-            handleClientAsync(client, curTime);
+            handleClientAsync(client);
           }
         });
       } catch (Exception e) {
@@ -82,7 +84,7 @@ public class Main {
     }
   }
 
-  private static void handleClientAsync(Client client, int curTime) {
+  private static void handleClientAsync(Client client) {
     boolean clientChanged = false;
     // Fight bot if for 10 seconds there is no human opponent
     if (client.status == Client.Status.READY_TO_FIGHT
@@ -91,8 +93,8 @@ public class Main {
         botNames[Utils.rndInRange(0, botNames.length -1)],
         client
       );
-      setFightingStatus(client, bot, curTime);
-      setFightingStatus(bot, client, curTime);
+      setFightingStatus(client, bot);
+      setFightingStatus(bot, client);
       generateRandomHitBlock(bot);
       Storage.saveClient(bot.chatId, bot);
       Storage.saveClient(client.chatId, client);
@@ -135,7 +137,7 @@ public class Main {
   }
 
   private static void handleUpdate(Telegram.Update upd) {
-    final int curTime = (int)(System.currentTimeMillis() / 1000L);
+    curTime = (int)(System.currentTimeMillis() / 1000L);
     int chatId = upd.message.chat.id;
     Client client = Storage.getClientByChatId(chatId);
     boolean newClient = client == null;
@@ -152,7 +154,7 @@ public class Main {
 
     if (newClient) {
       msg(client, "Welcome to the Fight Club!", mainButtons);
-      sendToActiveUsers(client.username + " joined the Fight Club!", curTime);
+      sendToActiveUsers(client.username + " joined the Fight Club!");
     }
 
     String txt = upd.message.text;
@@ -209,9 +211,9 @@ public class Main {
       // TODO: this does linear search through all clients :(
       Client opponent = Storage.getOpponentReadyToFight();
       if (opponent == null) {
-        setReadyToFight(client, curTime);
+        setReadyToFight(client);
       } else { 
-        startFightReal(client, opponent, curTime);
+        startFightReal(client, opponent);
       }
       return;
     }
@@ -226,7 +228,7 @@ public class Main {
         msg(client, "Don't know how to hit `" + where + "`.");
         return;
       }
-      setHit(client, target, curTime);
+      setHit(client, target);
       return;
     }
 
@@ -241,7 +243,7 @@ public class Main {
         msg(client, "Don't know how to block `" + where + "`.");
         return;
       }
-      setBlock(client, target, curTime);
+      setBlock(client, target);
       return;
     }
 
@@ -274,10 +276,10 @@ public class Main {
     }
 
     if (!txt.startsWith("/")) {
-      String message = client.username + ": " + txt; 
-      int numListeners = sendToActiveUsers(message, curTime) - 1;
+      String message = "\uD83D\uDCE2 " + client.username + ": " + txt; 
+      int numListeners = sendToActiveUsers(message) - 1;
       if (numListeners == 0) {
-        msg(client, "Everyone is far away so you were not heard :(");
+        msg(client, "You were not heard by anyone :(");
       }
       return;
     }
@@ -287,7 +289,7 @@ public class Main {
   }
 
   // returns number of people who heard you
-  private static int sendToActiveUsers(String message, int curTime) {
+  private static int sendToActiveUsers(String message) {
     int numListeners = 0;
     List<Integer> passive = new LinkedList<>();
     for (int recepientChatId : activeChats) {
@@ -351,17 +353,17 @@ public class Main {
     Storage.saveClient(client.chatId, client);
   }
 
-  private static void setReadyToFight(Client client, int curTime) {
+  private static void setReadyToFight(Client client) {
     // TODO: set ready to fight and save to index
     client.status = Client.Status.READY_TO_FIGHT;
     client.readyToFightSince = curTime; 
     Storage.saveClient(client.chatId, client);
-    msg(client, "Searching for a victim...");
+    sendToActiveUsers(PhraseGenerator.getReadyToFightPhrase(client));
   }
 
-  private static void startFightReal(Client client, Client opponent, int curTime) {
-    setFightingStatus(client, opponent, curTime);
-    setFightingStatus(opponent, client, curTime);
+  private static void startFightReal(Client client, Client opponent) {
+    setFightingStatus(client, opponent);
+    setFightingStatus(opponent, client);
 
     // Save automically both of them
     Storage.saveClient(client.chatId, client);
@@ -373,7 +375,7 @@ public class Main {
   }
 
 
-  private static void setHit(Client client, Client.BodyPart target, int curTime) {
+  private static void setHit(Client client, Client.BodyPart target) {
     client.hit = target;
     client.lastFightActivitySince = curTime;
     client.timeoutWarningSent = false;
@@ -386,7 +388,7 @@ public class Main {
     Storage.saveClient(opponent.chatId, opponent);
   }
 
-  private static void setBlock(Client client, Client.BodyPart target, int curTime) {
+  private static void setBlock(Client client, Client.BodyPart target) {
     client.block = target;
     client.lastFightActivitySince = curTime;
     client.timeoutWarningSent = false;
@@ -545,9 +547,7 @@ public class Main {
     loser.status = Client.Status.IDLE;
     winner.timeoutWarningSent = false;
     loser.timeoutWarningSent = false;
-
-    msg(loser, "You are defeated.");
-    msg(winner, loser.username + " is defeated. Congrats!");
+    sendToActiveUsers(PhraseGenerator.getWonPhrase(winner, loser));
     msg(winner, "You gained " + expGained + " experience.");
     if (winner.hp < winner.getMaxHp()) {
       msg(winner, "Fight is finished. Your health will recover in "
@@ -604,7 +604,7 @@ public class Main {
     }
   }
 
-  private static void setFightingStatus(Client client, Client opponent, int curTime) {
+  private static void setFightingStatus(Client client, Client opponent) {
     client.status = Client.Status.FIGHTING;
     client.fightingChatId = opponent.chatId;
     client.lastFightActivitySince = curTime; 
