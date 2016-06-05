@@ -101,11 +101,12 @@ public class Main {
 
       msg(client, "You're now fighting with " + bot.username + ".", fightButtons);
       msg(client, getClientStats(bot));
+      sendFightInstruction(client);
     }
     // Recover hp over time
     if (client.status == Client.Status.IDLE
         && client.hp < client.getMaxHp()
-        && client.lastRestore <= curTime - 1) {
+        && client.lastRestore <= curTime - 3) {
       client.hp++;
       client.lastRestore = curTime;
       if (client.hp == client.getMaxHp()) {
@@ -372,8 +373,15 @@ public class Main {
     msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
     msg(client, getClientStats(opponent));
     msg(opponent, getClientStats(client));
+    sendFightInstruction(client);
+    sendFightInstruction(opponent);
   }
 
+  private static void sendFightInstruction(Client client) {
+    if (client.fightsWon == 0) {
+      msg(client, "You need to choose which part of your body to block and where to hit.");
+    }
+  }
 
   private static void setHit(Client client, Client.BodyPart target) {
     client.hit = target;
@@ -457,11 +465,13 @@ public class Main {
 
   private static void makeAHit(Client client, Client victim) {
     String hitPhrase = "";
+    String clientPrefix = "\uD83D\uDDE1 ";
+    String victimPrefix = "\uD83D\uDEE1 ";
     if (victim.block == client.hit) {
       hitPhrase =
         PhraseGenerator.getBlockPhrase(client, victim, client.hit);  
-      msg(victim, hitPhrase);
-      msg(client, hitPhrase);
+      msg(victim, victimPrefix + hitPhrase);
+      msg(client, clientPrefix + hitPhrase);
       return;
     }
     int clientHits = getDamage(client);
@@ -469,8 +479,8 @@ public class Main {
     if (clientHits == 0) {
       hitPhrase =
         PhraseGenerator.getMissPhrase(client, victim, client.hit);
-      msg(victim, hitPhrase);
-      msg(client, hitPhrase);
+      msg(victim, victimPrefix + hitPhrase);
+      msg(client, clientPrefix + hitPhrase);
       return;
     }
     hitPhrase = PhraseGenerator.getHitPhrase(
@@ -480,8 +490,8 @@ public class Main {
       clientHits > client.getMaxDamage(),
       clientHits
     );
-    msg(victim, hitPhrase);
-    msg(client, hitPhrase);
+    msg(victim, victimPrefix + hitPhrase);
+    msg(client, clientPrefix + hitPhrase);
   }
 
   private static void handleHit(Client client, Client opponent) {
@@ -551,7 +561,7 @@ public class Main {
     msg(winner, "You gained " + expGained + " experience.");
     if (winner.hp < winner.getMaxHp()) {
       msg(winner, "Fight is finished. Your health will recover in "
-        + (winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
+        + 3*(winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
     } else {
       msg(winner, "Fight is finished.", mainButtons);
     }
@@ -686,7 +696,7 @@ class Client {
   }
 
   public int getMaxDamage() {
-    return strength * Main.HP_UNIT;
+    return Main.HP_UNIT + strength - 3;
   }
 }
 
