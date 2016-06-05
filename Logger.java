@@ -27,23 +27,27 @@ class Logger {
   private static final String EXT = ".db";
   private static PrintWriter logsWriter;
 
-  static void logException(Exception e)
-    throws IOException {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    e.printStackTrace(pw);
-    PrintWriter out = new PrintWriter(exceptionsLog);
-    String stackTrace = sw.toString();
-    out.println(stackTrace);
-    out.close();
-    log(stackTrace);
-    String[] cmd = {
-      "/bin/sh",
-      "-c",
-      "cat " + exceptionsLog + " | sendmail " +
-      "lennytmp@gmail.com borodin.vadim@gmail.com"
-    };
-    Runtime.getRuntime().exec(cmd);
+  static void logException(Exception e) {
+    try {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      PrintWriter out = new PrintWriter(exceptionsLog);
+      String stackTrace = sw.toString();
+      out.println(stackTrace);
+      out.close();
+      log(stackTrace);
+      String[] cmd = {
+        "/bin/sh",
+        "-c",
+        "cat " + exceptionsLog + " | sendmail " +
+        "lennytmp@gmail.com borodin.vadim@gmail.com"
+      };
+      Runtime.getRuntime().exec(cmd);
+    } catch (IOException e2) {
+      log(e2.toString());
+      System.exit(1);
+    }
   }
 
   static void setDbPath(String path) {

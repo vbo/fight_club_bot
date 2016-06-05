@@ -29,8 +29,7 @@ class TelegramApi {
   private static Gson g = new Gson();
 
   public static void say(int chatId, String text, String[] buttonTexts) {
-    String params = "chat_id=" + chatId + "&text=" + text
-      + "&parse_mode=Markdown";
+    String params = "chat_id=" + chatId + "&text=" + text;
     if (buttonTexts.length > 0) {
       int numberOfRows = (int)Math.ceil(buttonTexts.length/3.0);
       Telegram.Button[][] arr = new Telegram.Button[numberOfRows][];
@@ -90,7 +89,7 @@ class TelegramApi {
       sendRequest();
       result = getResponse();
     } catch (Exception e) {
-      System.out.println("Error while handling http request " + e);
+      Logger.logException(e);
     }
     if (result.equals( "{\"ok\":true,\"result\":[]}")) {
       Logger.log("response: " + result);
