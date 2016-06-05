@@ -1,6 +1,16 @@
 package ChatBot;
 
 class PhraseGenerator {
+
+  static String getReadyToFightPhrase(Client client) {
+    return "\u2694 " + client.username + " " + Utils.getRnd(Phrases.lookingForOpponent) + "."; 
+  }
+
+  static String getWonPhrase(Client winner, Client loser) {
+    return "\u2620 " + winner.username + " " + Utils.getRnd(Phrases.won) + " "
+      + loser.username + ".";
+  }
+
   static String getWisdom(Client client) {
     return Utils.getRnd(Phrases.wisdomIntro) + " "
       + Utils.getRnd(Phrases.wisdoms);

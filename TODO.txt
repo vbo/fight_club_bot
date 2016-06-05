@@ -1,7 +1,6 @@
 TODO:
-- Sending messages in other languages (RU)
 - Transactions
-- Better logs (no empty getUpdates)
+- Better logs (remove hacks) 
 
 IDEAS:
 - Add leaderboard / stats

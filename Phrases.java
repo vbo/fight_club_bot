@@ -173,8 +173,6 @@ class Phrases {
     "misteriously whispered to",
     "mumbled to",
     "whispered to",
-    "screamed at",
-    "yelled at",
     "smiling wildly told",
     "made a grin and told",
     "said shyly to"
@@ -218,5 +216,20 @@ class Phrases {
     "Swearing doesn't make your argument valid; it just tells the other "
       + "person you have lost your class and control.",
     "I'm tired today, you should come later on."
+  };
+
+  static final String[] won = {
+    "has won against",
+    "has defeated",
+    "has beaten",
+    "has overcome"
+  };
+
+  static final String[] lookingForOpponent = {
+    "is looking for an opponent",
+    "wants to fight",
+    "wants to participate in a combat",
+    "is searching for a victim",
+    "is ready to fight"
   };
 }
