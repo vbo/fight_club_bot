@@ -112,7 +112,7 @@ class Phrases {
       "to smash the opponent's face",
       "to slam the enemy's nose with his heel",
       "to caress opponent's cheek",
-      "to punched the competitor's eyebrow",
+      "to punch the competitor's eyebrow",
       "to stroke the enemy's eye",
       "to bite competitor's nose",
       "to make a quick punch in the rival's throat",
