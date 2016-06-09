@@ -34,6 +34,6 @@ class Migrator {
         + "got level up");
       client.level++;
     }
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
   }
 }

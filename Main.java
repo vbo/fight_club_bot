@@ -95,8 +95,8 @@ public class Main {
       setFightingStatus(client, bot);
       setFightingStatus(bot, client);
       generateRandomHitBlock(bot);
-      Storage.saveClient(bot.chatId, bot);
-      Storage.saveClient(client.chatId, client);
+      Storage.saveClient(bot);
+      Storage.saveClient(client);
 
       msg(client, "You're now fighting with " + bot.username + ".", fightButtons);
       msg(client, getClientStats(bot));
@@ -111,7 +111,7 @@ public class Main {
       if (client.hp == client.getMaxHp()) {
         msg(client, "You are now fully recovered.");
       }
-      Storage.saveClient(client.chatId, client);
+      Storage.saveClient(client);
     }
     // Check for slow acting (warning)
     if (client.status == Client.Status.FIGHTING
@@ -119,7 +119,7 @@ public class Main {
         && !client.timeoutWarningSent
         && client.lastFightActivitySince <= curTime - 30) {
       client.timeoutWarningSent = true;
-      Storage.saveClient(client.chatId, client);
+      Storage.saveClient(client);
 
       msg(client, "You have 5 seconds to make a decision.");
     }
@@ -131,8 +131,9 @@ public class Main {
       msg(client, "Timeout!");
       msg(opponent, "Timeout!");
       finishFight(opponent, client); 
-      Storage.saveClient(opponent.chatId, opponent);
-      Storage.saveClient(client.chatId, client);
+      // TODO: save is not atomic
+      Storage.saveClient(opponent);
+      Storage.saveClient(client);
     }
   }
 
@@ -150,7 +151,7 @@ public class Main {
     }
     client.lastActivity = curTime;
     activeChats.add(chatId);
-    Storage.saveClient(chatId, client);
+    Storage.saveClient(client);
 
     if (newClient) {
       msg(client, "Welcome to the Fight Club!", mainButtons);
@@ -260,14 +261,14 @@ public class Main {
       msg(client, "Retreat42!");
       msg(opponent, "Retreat42!");
       finishFight(opponent, client); 
-      Storage.saveClient(opponent.chatId, opponent);
-      Storage.saveClient(client.chatId, client);
+      Storage.saveClient(opponent);
+      Storage.saveClient(client);
       return;
     }
 
     if (txt.equals("/reset42")) {
       Client cleanClient = new Client(client.chatId, client.username);
-      Storage.saveClient(cleanClient.chatId, cleanClient);
+      Storage.saveClient(cleanClient);
       msg(cleanClient, "Reset42");
       return;
     }
@@ -325,13 +326,13 @@ public class Main {
         + "`/username newname`.");
       client.nameChangeHintSent = true;
     }
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
   }
 
   private static void changeUserName(Client client, String newName) {
     client.username = newName;
     msg(client, "Your name is now " + newName + ".");
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
   }
 
   private static void generateRandomHitBlock(Client client) {
@@ -357,14 +358,14 @@ public class Main {
     msg(client, "You have increased your " + skill + ", it is now "
       + client.strength + ". You have " + client.levelPoints
       + " more level points.", mainButtons);
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
   }
 
   private static void setReadyToFight(Client client) {
     // TODO: set ready to fight and save to index
     client.status = Client.Status.READY_TO_FIGHT;
     client.readyToFightSince = curTime; 
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
     sendToActiveUsers(PhraseGenerator.getReadyToFightPhrase(client));
   }
 
@@ -373,8 +374,8 @@ public class Main {
     setFightingStatus(opponent, client);
 
     // Save automically both of them
-    Storage.saveClient(client.chatId, client);
-    Storage.saveClient(opponent.chatId, opponent);
+    Storage.saveClient(client);
+    Storage.saveClient(opponent);
     msg(client, "You're now fighting with " + opponent.username + ".", fightButtons);
     msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
     msg(client, getClientStats(opponent));
@@ -398,8 +399,9 @@ public class Main {
     if (readyToHitBlock(client, opponent)) {
       handleHit(client, opponent);
     }
-    Storage.saveClient(client.chatId, client);
-    Storage.saveClient(opponent.chatId, opponent);
+    //TODO: save is not atomic
+    Storage.saveClient(client);
+    Storage.saveClient(opponent);
   }
 
   private static void setBlock(Client client, Client.BodyPart target) {
@@ -412,8 +414,8 @@ public class Main {
       handleHit(client, opponent);
     }
     // TODO: it's not an atomic operation to save two clients.
-    Storage.saveClient(client.chatId, client);
-    Storage.saveClient(opponent.chatId, opponent);
+    Storage.saveClient(client);
+    Storage.saveClient(opponent);
   }
 
   private static void consumePotion(Client client) {
@@ -422,7 +424,7 @@ public class Main {
       client.hp = client.getMaxHp();
     }
     msg(client, "Potion consumed.");
-    Storage.saveClient(client.chatId, client);
+    Storage.saveClient(client);
   }
 
   private static Client.BodyPart getBodyPartFromString(String str) {
@@ -550,7 +552,7 @@ public class Main {
       loser.hp = 0;
       finishFight(winner, loser);
     }
-    Storage.saveClient(opponent.chatId, opponent);
+    Storage.saveClient(opponent);
   }
 
   private static void finishFight(Client winner, Client loser) {

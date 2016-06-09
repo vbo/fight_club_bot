@@ -48,8 +48,8 @@ class Storage {
     return g.fromJson(clientJson, Client.class);
   }
 
-  static void saveClient(int chatId, Client client) {
-    Logger.saveClient(Integer.toString(chatId), g.toJson(client));
+  static void saveClient(Client client) {
+    Logger.saveClient(Integer.toString(client.chatId), g.toJson(client));
   }
 
   static int getMaxUpdateId() {
