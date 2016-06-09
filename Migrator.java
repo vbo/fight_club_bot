@@ -26,6 +26,14 @@ class Migrator {
     if (client.level == 0) {
       client.level = 1;
     }
+    int neededExp = Main.nextExp(client);
+    if (client.exp >= neededExp) {
+      System.out.println(clinet.username + " "
+        + "was " + client.exp + " "
+        + "needed " + neededExp
+        + "got level up");
+      client.level++;
+    }
     Storage.saveClient(client.chatId, client);
   }
 }

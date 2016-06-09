@@ -620,7 +620,7 @@ public class Main {
     client.timeoutWarningSent = false;
   }
 
-  private static int nextExp(Client client) {
+  static int nextExp(Client client) {
     int levelDelta = 30;
     int result = 0;
     for (int i = 0; i < client.level; i++) {
