@@ -1,6 +1,6 @@
 TODO:
 - Transactions
-- Better logs (remove hacks) 
+- Remove foreach
 
 IDEAS:
 - Add leaderboard / stats

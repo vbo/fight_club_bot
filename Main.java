@@ -671,6 +671,7 @@ class Client {
     hp = getMaxHp();
   }
 
+  // Used for creating bots
   Client(int chatId, String username, Client opponent) {
     this(chatId, username);
     if (opponent.level == 1) {
