@@ -28,7 +28,7 @@ class Migrator {
     }
     int neededExp = Main.nextExp(client);
     if (client.exp >= neededExp) {
-      System.out.println(clinet.username + " "
+      System.out.println(client.username + " "
         + "was " + client.exp + " "
         + "needed " + neededExp
         + "got level up");
