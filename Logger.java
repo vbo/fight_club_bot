@@ -77,8 +77,7 @@ class Logger {
       fw.write(value);
       fw.close();
     } catch (IOException e) {
-      System.out.println("Can't save client " + e);
-      assert false;
+      Logger.logException(e);
     }
   }
 
@@ -101,8 +100,7 @@ class Logger {
       fw.write(Integer.toString(value));
       fw.close();
     } catch (IOException e) {
-      System.out.println("Can't save variable " + e);
-      assert false;
+      Logger.logException(e);
     }
   }
 
@@ -127,7 +125,7 @@ class Logger {
     try {
       Logger.getLogsWriter().println(entry);
     } catch (Exception e) {
-      System.out.println("can't write logs " + e);
+      Logger.logException(e);
       System.exit(3);
     }
   }
