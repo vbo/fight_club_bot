@@ -85,7 +85,6 @@ public class Main {
   }
 
   private static void handleClientAsync(Client client) {
-    boolean clientChanged = false;
     // Fight bot if for 10 seconds there is no human opponent
     if (client.status == Client.Status.READY_TO_FIGHT
         && client.readyToFightSince <= curTime - 10) {
@@ -576,12 +575,12 @@ public class Main {
   }
 
   private static int getExperience(Client loser) {
-    return 10 * (loser.level + 1);
+    return 10 * loser.level;
   }
 
   private static String getClientStats(Client client) {
     String result = "*" + client.username + "*\n" 
-      + "Level: " + (client.level + 1) + "\n"
+      + "Level: " + client.level + "\n"
       + "Health: " + client.hp + " (out of " + client.getMaxHp() + ")\n"
       + "Damage: 1 - " + client.getMaxDamage() + "\n"
       + "Strength: " + client.strength  + "\n"
@@ -624,7 +623,7 @@ public class Main {
   private static int nextExp(Client client) {
     int levelDelta = 30;
     int result = 0;
-    for (int i = 0; i < client.level + 1; i++) {
+    for (int i = 0; i < client.level; i++) {
       result = result + levelDelta * (int)Math.pow(2, i);
     }
     return result;
@@ -651,7 +650,7 @@ class Client {
   int fightsWon = 0;
 
   int exp = 0;
-  int level = 0;
+  int level = 1;
   int strength = 3;
   int vitality = 3;
   int luck = 3;
@@ -667,7 +666,7 @@ class Client {
 
   Client(int chatId, String username, Client opponent) {
     this(chatId, username);
-    if (opponent.level == 0) {
+    if (opponent.level == 1) {
       vitality = 1;
       strength = 2;
       luck = 1;
