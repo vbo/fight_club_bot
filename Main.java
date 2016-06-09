@@ -263,7 +263,14 @@ public class Main {
       Storage.saveClient(opponent.chatId, opponent);
       Storage.saveClient(client.chatId, client);
       return;
-    } 
+    }
+
+    if (txt.equals("/reset42")) {
+      Client cleanClient = new Client(client.chatId, client.username);
+      Storage.saveClient(cleanClient.chatId, cleanClient);
+      msg(cleanClient, "Reset42");
+      return;
+    }
 
     if (client.status == Client.Status.FIGHTING &&
         !txt.startsWith("/")) {

@@ -28,7 +28,7 @@ class PhraseGenerator {
     if (critHit) {
       result += "Critical hit! ";
     }
-    result += "-" + damage + " [[" + victim.hp + "/" + victim.getMaxHp() + "]]";
+    result += "-" + damage + " [" + victim.hp + "/" + victim.getMaxHp() + "]";
     return result;
   }
 
@@ -40,7 +40,7 @@ class PhraseGenerator {
       + Utils.getRnd(Phrases.but) + " "
       + victim.username +  " "
       + Utils.getRnd(Phrases.blocked) + ". " 
-      + "[[" + victim.hp + "/" + victim.getMaxHp() + "]]";
+      + "[" + victim.hp + "/" + victim.getMaxHp() + "]";
     return result;
   }
 
@@ -51,7 +51,7 @@ class PhraseGenerator {
       + Utils.getRnd(Phrases.toHit[part.ordinal()]) + " "
       + Utils.getRnd(Phrases.but) +  " "
       + Utils.getRnd(Phrases.missed) + ". " 
-      + "[[" + victim.hp + "/" + victim.getMaxHp() + "]]";
+      + "[" + victim.hp + "/" + victim.getMaxHp() + "]";
     return result;
   }
 
