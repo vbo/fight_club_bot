@@ -17,7 +17,7 @@ class Storage {
       String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
       if (c == null) {
-        System.out.println(clientJson + " - " + chatId);
+        Logger.logException(new Exception(clientJson + " - " + chatId));
         continue;
       }
       doable.run(c);
@@ -29,6 +29,10 @@ class Storage {
     for (String chatId : chatIds) {
       String clientJson = Logger.getClient(chatId);
       Client c = g.fromJson(clientJson, Client.class);
+      if (c == null) {
+        Logger.logException(new Exception(clientJson + " - " + chatId));
+        continue;
+      }
       if (c.status == Client.Status.READY_TO_FIGHT) {
         return c;
       }
