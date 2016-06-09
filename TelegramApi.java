@@ -91,7 +91,7 @@ class TelegramApi {
     } catch (Exception e) {
       Logger.logException(e);
     }
-    if (result.equals( "{\"ok\":true,\"result\":[]}")) {
+    if (!result.trim().equals("{\"ok\":true,\"result\":[]}")) {
       Logger.log("response: " + result);
     }
     return result;
