@@ -12,9 +12,15 @@ import java.io.StringWriter;
 
 import java.lang.Runtime;
 
-import java.util.LinkedList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,17 +31,82 @@ class Logger {
   private static String varsPath;
   private static String exceptionsLog;
   private static final String EXT = ".db";
+  private static final String BACKUP_FILE = ".backup";
   private static PrintWriter logsWriter;
+
+  public static void initialize() {
+    if (hasClientsBackup()) {
+      restoreClientsFromBackup();
+      removeClientsBackup();
+    }
+  }
+
+  private static boolean hasClientsBackup() {
+    File f = new File(clientsPath + BACKUP_FILE);
+    return f.exists() && !f.isDirectory();
+  }
+
+  private static void restoreClientsFromBackup() {
+    try {
+      FileReader fr = new FileReader(clientsPath + BACKUP_FILE);
+      BufferedReader br = new BufferedReader(fr);
+      String backupLine = br.readLine();
+      Pattern nameExtractor = Pattern.compile("^([-0-9]*)");
+      Pattern valueExtractor = Pattern.compile("^.*?;(.*)$");
+      while (backupLine != null) {
+        String name = Utils.getMatch(backupLine, nameExtractor);
+        String value = Utils.getMatch(backupLine, valueExtractor);
+        writeClient(name, value);
+        backupLine = br.readLine();
+      }
+      br.close();
+    } catch (Exception e) {
+      logException(e);
+    }
+  }
+
+  private static void removeClientsBackup() {
+    Path p = Paths.get(clientsPath + BACKUP_FILE);
+    try {
+      Files.delete(p);
+    } catch (Exception e) {
+      Logger.logException(e);
+    }
+  }
+
+  private static void makeClientBackup(String filename) {
+    makeClientsBackup(new String[] {filename});
+  }
+
+  private static void makeClientsBackup(String[] filenames) {
+    try {
+      FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
+      BufferedWriter bw = new BufferedWriter(fw);
+      PrintWriter backupWriter = new PrintWriter(bw);
+      for (int i = 0; i < filenames.length; i++) {
+        String value = getClient(filenames[i]);
+        backupWriter.println(filenames[i] + ";" + value);
+      }
+      backupWriter.close();
+    } catch (Exception e) {
+      Logger.logException(e);
+    }
+  }
 
   static void logException(Exception e) {
     try {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);
-      PrintWriter out = new PrintWriter(exceptionsLog);
       String stackTrace = sw.toString();
+      PrintWriter out = new PrintWriter(exceptionsLog);
       out.println(stackTrace);
       out.close();
+      System.out.println("ded");
+      if (!Main.isProd) {
+        System.out.println(stackTrace);
+        System.exit(1);
+      }
       log(stackTrace);
       String[] cmd = {
         "/bin/sh",
@@ -45,6 +116,7 @@ class Logger {
       };
       Runtime.getRuntime().exec(cmd);
     } catch (IOException e2) {
+      System.out.println("ded");
       log(e2.toString());
       System.exit(1);
     }
@@ -72,6 +144,21 @@ class Logger {
   }
 
   static void saveClient(String name, String value) {
+    makeClientBackup(name);
+    writeClient(name, value); 
+    removeClientsBackup();
+  }
+
+  static void saveClients(String[] names, String[] values) {
+    assert names.length == values.length;
+    makeClientsBackup(names);
+    for (int i = 0; i < names.length; i++) {
+      writeClient(names[i], values[i]); 
+    }
+    removeClientsBackup();
+  }
+
+  static void writeClient(String name, String value) {
     try {
       FileWriter fw = new FileWriter(clientsPath + name + EXT, false);
       fw.write(value);

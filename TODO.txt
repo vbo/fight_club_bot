@@ -1,10 +1,20 @@
 TODO:
-- Transactions
 - Remove foreach
+  - Iterate through active recently only?
+  - Restore active users on startup
 
 IDEAS:
-- Add leaderboard / stats
 - Crafting
+  - Add inventory
+  - Make mobs drop potion
+  - Be able to drink potion during the battle
+  - Define which mobs drop what
+  - Make a crafting recipe & craft button
+  - Make a characteristic (Crafting) which influences chance to get a potion
+  - Give exp for succesful brewing
+- Add a shop
+- Simplify the hit&block: make less options and one action only
+- Add leaderboard / stats
 - Mobs personality (sceletons are good at strength, produce bones etc)
 - Fight many to many, many to one
 - Generate fantasy names

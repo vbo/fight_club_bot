@@ -11,6 +11,21 @@ class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
   private static Gson g = new Gson();
 
+  static void saveClients(Client... clients) {
+    String[] names =  new String[clients.length];
+    String[] values =  new String[clients.length];
+    for (int i = 0; i < clients.length; i++) {
+      names[i] = Integer.toString(clients[i].chatId);
+      values[i] = g.toJson(clients[i]);
+    }
+    Logger.saveClients(names, values);
+  }
+
+  static void saveClient(Client client) {
+    String chatId = Integer.toString(client.chatId);
+    Logger.saveClient(chatId, g.toJson(client));
+  }
+
   static void forEachClient(ClientDo doable) {
     List<String> chatIds = Logger.getAllClientNames();
     for (String chatId : chatIds) {
@@ -46,10 +61,6 @@ class Storage {
       return null;
     }
     return g.fromJson(clientJson, Client.class);
-  }
-
-  static void saveClient(Client client) {
-    Logger.saveClient(Integer.toString(client.chatId), g.toJson(client));
   }
 
   static int getMaxUpdateId() {

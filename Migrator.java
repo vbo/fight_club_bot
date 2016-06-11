@@ -7,6 +7,8 @@ class Migrator {
       System.exit(0);
     }
     Logger.setDbPath(args[0]);
+    Logger.initialize();
+
     System.out.println("Starting migration...");
     Storage.forEachClient(new ClientDo() {
       public void run(Client client) {

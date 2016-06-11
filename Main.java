@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class Main {
   public static final int HP_UNIT = 5;
+  public static boolean isProd = false;
+
   private static final String[] mainButtons = {"fight", "profile", "wiseman"};
   private static final String[] fightButtons = {
     "hit head", "hit torso", "hit legs",
@@ -26,7 +28,6 @@ public class Main {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
   private static Set<Integer> activeChats = new HashSet<>();
-  private static boolean isProd = false;
   private static int curTime;
 
   public static void main(String[] args)
@@ -36,6 +37,7 @@ public class Main {
       System.exit(0);
     }
     Logger.setDbPath(args[0]);
+    Logger.initialize();
 
     if (args.length > 1 && args[1].equals("PROD")) {
       isProd = true;
@@ -95,8 +97,7 @@ public class Main {
       setFightingStatus(client, bot);
       setFightingStatus(bot, client);
       generateRandomHitBlock(bot);
-      Storage.saveClient(bot);
-      Storage.saveClient(client);
+      Storage.saveClients(bot, client);
 
       msg(client, "You're now fighting with " + bot.username + ".", fightButtons);
       msg(client, getClientStats(bot));
@@ -131,9 +132,7 @@ public class Main {
       msg(client, "Timeout!");
       msg(opponent, "Timeout!");
       finishFight(opponent, client); 
-      // TODO: save is not atomic
-      Storage.saveClient(opponent);
-      Storage.saveClient(client);
+      Storage.saveClients(opponent, client);
     }
   }
 
@@ -261,8 +260,7 @@ public class Main {
       msg(client, "Retreat42!");
       msg(opponent, "Retreat42!");
       finishFight(opponent, client); 
-      Storage.saveClient(opponent);
-      Storage.saveClient(client);
+      Storage.saveClients(opponent, client);
       return;
     }
 
@@ -372,10 +370,7 @@ public class Main {
   private static void startFightReal(Client client, Client opponent) {
     setFightingStatus(client, opponent);
     setFightingStatus(opponent, client);
-
-    // Save automically both of them
-    Storage.saveClient(client);
-    Storage.saveClient(opponent);
+    Storage.saveClients(client, opponent);
     msg(client, "You're now fighting with " + opponent.username + ".", fightButtons);
     msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
     msg(client, getClientStats(opponent));
@@ -399,9 +394,7 @@ public class Main {
     if (readyToHitBlock(client, opponent)) {
       handleHit(client, opponent);
     }
-    //TODO: save is not atomic
-    Storage.saveClient(client);
-    Storage.saveClient(opponent);
+    Storage.saveClients(opponent, client);
   }
 
   private static void setBlock(Client client, Client.BodyPart target) {
@@ -413,9 +406,7 @@ public class Main {
     if (readyToHitBlock(client, opponent)) {
       handleHit(client, opponent);
     }
-    // TODO: it's not an atomic operation to save two clients.
-    Storage.saveClient(client);
-    Storage.saveClient(opponent);
+    Storage.saveClients(opponent, client);
   }
 
   private static void consumePotion(Client client) {
@@ -552,7 +543,6 @@ public class Main {
       loser.hp = 0;
       finishFight(winner, loser);
     }
-    Storage.saveClient(opponent);
   }
 
   private static void finishFight(Client winner, Client loser) {
