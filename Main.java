@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,23 +28,18 @@ public class Main {
   private static final String[] botNames = {
     "Ogre", "Grunt", "Skeleton", "Beggar", "Drunk", "Crackhead"
   };
+  private static final int CHAT_TIMEOUT = 600;
+
   private static Set<Integer> activeChats = new HashSet<>();
+  private static Set<Integer> injuredChats = new HashSet<>();
+  private static Set<Integer> readyToFightChats = new HashSet<>();
+  private static Set<Integer> fightingChats = new HashSet<>();
+
   private static int curTime;
 
   public static void main(String[] args)
       throws InterruptedException, Exception {
-    if (args.length < 1) {
-      System.out.println("Usage: ChatBot.jar path/to/db");
-      System.exit(0);
-    }
-    Logger.setDbPath(args[0]);
-    Logger.initialize();
-
-    if (args.length > 1 && args[1].equals("PROD")) {
-      isProd = true;
-      TelegramApi.token = TelegramApi.TOKEN_PROD;
-    }
-
+    initialize(args);
     System.out.println("Fight Club Server started...");
     while (true) {
       try {
@@ -63,18 +59,12 @@ public class Main {
           }
         }
         // Background/async operations for each client
-        curTime = (int)(System.currentTimeMillis() / 1000L);
-        Storage.forEachClient(new ClientDo() {
-          public void run(Client client) {
-            if (client == null) {
-              return; // this shouldn't happen
-            }
-            if (client.chatId < 0) {
-              return; // bots have no async logic as of now
-            }
-            handleClientAsync(client);
-          }
-        });
+        updateCurTime();
+        restoreHpIfNeeded(Storage.getClientsByChatIds(injuredChats));
+        assignBotsIfTimeout(Storage.getClientsByChatIds(readyToFightChats));
+        Client[] fightingClients = Storage.getClientsByChatIds(fightingChats);
+        sendTimoutWarningsIfNeeded(fightingClients);
+        stopFightsTimeoutIfNeeded(fightingClients);
       } catch (Exception e) {
         if (isProd) {
           Logger.logException(e);
@@ -86,16 +76,57 @@ public class Main {
     }
   }
 
-  private static void handleClientAsync(Client client) {
-    // Fight bot if for 10 seconds there is no human opponent
-    if (client.status == Client.Status.READY_TO_FIGHT
-        && client.readyToFightSince <= curTime - 10) {
+  private static void initialize(String[] args) {
+    if (args.length < 1) {
+      System.out.println("Usage: ChatBot.jar path/to/db");
+      System.exit(0);
+    }
+    Logger.setDbPath(args[0]);
+    Logger.initialize();
+
+    if (args.length > 1 && args[1].equals("PROD")) {
+      isProd = true;
+      TelegramApi.token = TelegramApi.TOKEN_PROD;
+    }
+
+    // Read active & ready to fight clients
+    updateCurTime();
+
+    Storage.forEachClient(new ClientDo() {
+      public void run(Client client) {
+        if (client == null) {
+          return; // this shouldn't happen
+        }
+        if (client.chatId < 0) {
+          return; // bots have no async logic as of now
+        }
+        if (client.lastActivity > curTime - CHAT_TIMEOUT) {
+          activeChats.add(client.chatId);
+        }
+        if (client.hp < client.getMaxHp()) {
+          injuredChats.add(client.chatId);
+        }
+        if (client.status == Client.Status.READY_TO_FIGHT) {
+          readyToFightChats.add(client.chatId);
+        }
+        if (client.status == Client.Status.FIGHTING) {
+          fightingChats.add(client.chatId);
+        }
+      }
+    });
+  }
+
+  private static void assignBotsIfTimeout(Client[] clients) {
+    for (Client client : clients) {
+      if (client.status != Client.Status.READY_TO_FIGHT
+          || client.readyToFightSince > curTime - 10) {
+        return;
+      }
       Client bot = new Client(-client.chatId, 
         botNames[Utils.rndInRange(0, botNames.length -1)],
         client
       );
       setFightingStatus(client, bot);
-      setFightingStatus(bot, client);
       generateRandomHitBlock(bot);
       Storage.saveClients(bot, client);
 
@@ -103,31 +134,47 @@ public class Main {
       msg(client, getClientStats(bot));
       sendFightInstruction(client);
     }
-    // Recover hp over time
-    if (client.status == Client.Status.IDLE
-        && client.hp < client.getMaxHp()
-        && client.lastRestore <= curTime - 3) {
+  }
+
+  private static void restoreHpIfNeeded(Client[] clients) {
+    for (Client client : clients) {
+      if (client.status != Client.Status.IDLE
+          || client.hp == client.getMaxHp()
+          || client.lastRestore > curTime - 3) {
+        continue;
+      }
       client.hp++;
       client.lastRestore = curTime;
       if (client.hp == client.getMaxHp()) {
         msg(client, "You are now fully recovered.");
+        injuredChats.remove(client.chatId);
       }
       Storage.saveClient(client);
     }
-    // Check for slow acting (warning)
-    if (client.status == Client.Status.FIGHTING
-        && (client.hit == null || client.block == null)
-        && !client.timeoutWarningSent
-        && client.lastFightActivitySince <= curTime - 30) {
+  }
+
+  private static void sendTimoutWarningsIfNeeded(Client[] clients) {
+    for (Client client : clients) {
+      if (client.status != Client.Status.FIGHTING
+          || (client.hit != null && client.block != null)
+          || client.timeoutWarningSent
+          || client.lastFightActivitySince > curTime - 30) {
+          continue;
+      }
       client.timeoutWarningSent = true;
       Storage.saveClient(client);
 
       msg(client, "You have 5 seconds to make a decision.");
     }
-    // Check for slow acting (finish fight)
-    if (client.status == Client.Status.FIGHTING
-        && client.timeoutWarningSent
-        && client.lastFightActivitySince <= curTime - 50) {
+  }
+
+  private static void stopFightsTimeoutIfNeeded(Client[] clients) {
+    for (Client client : clients) {
+      if (client.status != Client.Status.FIGHTING
+          || !client.timeoutWarningSent
+          || client.lastFightActivitySince > curTime - 50) {
+        continue;
+      }
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
       msg(client, "Timeout!");
       msg(opponent, "Timeout!");
@@ -136,8 +183,12 @@ public class Main {
     }
   }
 
-  private static void handleUpdate(Telegram.Update upd) {
+  private static void updateCurTime() {
     curTime = (int)(System.currentTimeMillis() / 1000L);
+  }
+
+  private static void handleUpdate(Telegram.Update upd) {
+    updateCurTime();
     int chatId = upd.message.chat.id;
     Client client = Storage.getClientByChatId(chatId);
     boolean newClient = client == null;
@@ -208,12 +259,11 @@ public class Main {
         msg(client, "You're already searching for a victim.");
         return;
       }
-      // TODO: this does linear search through all clients :(
-      Client opponent = Storage.getOpponentReadyToFight();
-      if (opponent == null) {
+      if (readyToFightChats.size() == 0) {
         setReadyToFight(client);
-      } else { 
-        startFightReal(client, opponent);
+      } else {
+        int opponentChatId = readyToFightChats.iterator().next();
+        startFightReal(client, Storage.getClientByChatId(opponentChatId));
       }
       return;
     }
@@ -300,7 +350,7 @@ public class Main {
     List<Integer> passive = new LinkedList<>();
     for (int recepientChatId : activeChats) {
       Client recepient = Storage.getClientByChatId(recepientChatId);
-      if (recepient.lastActivity > curTime - 600) {
+      if (recepient.lastActivity > curTime - CHAT_TIMEOUT) {
         msg(recepient, message);
         numListeners++;
       } else {
@@ -364,12 +414,12 @@ public class Main {
     client.status = Client.Status.READY_TO_FIGHT;
     client.readyToFightSince = curTime; 
     Storage.saveClient(client);
+    readyToFightChats.add(client.chatId);
     sendToActiveUsers(PhraseGenerator.getReadyToFightPhrase(client));
   }
 
   private static void startFightReal(Client client, Client opponent) {
     setFightingStatus(client, opponent);
-    setFightingStatus(opponent, client);
     Storage.saveClients(client, opponent);
     msg(client, "You're now fighting with " + opponent.username + ".", fightButtons);
     msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
@@ -553,19 +603,23 @@ public class Main {
     winner.exp += expGained; 
     winner.status = Client.Status.IDLE;
     loser.status = Client.Status.IDLE;
+    fightingChats.remove(winner.chatId);
+    fightingChats.remove(loser.chatId);
     winner.timeoutWarningSent = false;
     loser.timeoutWarningSent = false;
     sendToActiveUsers(PhraseGenerator.getWonPhrase(winner, loser));
     msg(winner, "You gained " + expGained + " experience.");
-    if (winner.hp < winner.getMaxHp()) {
+    if (winner.hp < winner.getMaxHp() && winner.chatId > 0) {
       msg(winner, "Fight is finished. Your health will recover in "
         + 3*(winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);
+      injuredChats.add(winner.chatId);
     } else {
       msg(winner, "Fight is finished.", mainButtons);
     }
-    if (loser.hp < loser.getMaxHp()) {
+    if (loser.hp < loser.getMaxHp() && loser.chatId > 0) {
       msg(loser, "Fight is finished. Your health will recover in "
         + 3*(loser.getMaxHp() - loser.hp) + " seconds.", mainButtons);
+      injuredChats.add(loser.chatId);
     } else {
       msg(loser, "Fight is finished.", mainButtons);
     }
@@ -612,11 +666,20 @@ public class Main {
     }
   }
 
-  private static void setFightingStatus(Client client, Client opponent) {
+  private static void setFightingStatus(Client client, Client opponent, int first) {
     client.status = Client.Status.FIGHTING;
     client.fightingChatId = opponent.chatId;
     client.lastFightActivitySince = curTime; 
     client.timeoutWarningSent = false;
+    readyToFightChats.remove(client.chatId);
+    fightingChats.add(client.chatId);
+    if (first == 0) {
+      setFightingStatus(opponent, client, 1);
+    }
+  }
+
+  static void setFightingStatus(Client client, Client opponent) {
+    setFightingStatus(client, opponent, 0);
   }
 
   static int nextExp(Client client) {

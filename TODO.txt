@@ -1,9 +1,4 @@
 TODO:
-- Remove foreach
-  - Iterate through active recently only?
-  - Restore active users on startup
-
-IDEAS:
 - Crafting
   - Add inventory
   - Make mobs drop potion
@@ -12,6 +7,8 @@ IDEAS:
   - Make a crafting recipe & craft button
   - Make a characteristic (Crafting) which influences chance to get a potion
   - Give exp for succesful brewing
+
+IDEAS:
 - Add a shop
 - Simplify the hit&block: make less options and one action only
 - Add leaderboard / stats

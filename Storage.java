@@ -2,10 +2,11 @@ package ChatBot;
 
 import com.google.gson.Gson;
 
-import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class Storage {
   private static Map<Integer, String> clients = new HashMap<>();
@@ -39,28 +40,22 @@ class Storage {
     }
   }
 
-  static Client getOpponentReadyToFight() {
-    List<String> chatIds = Logger.getAllClientNames();
-    for (String chatId : chatIds) {
-      String clientJson = Logger.getClient(chatId);
-      Client c = g.fromJson(clientJson, Client.class);
-      if (c == null) {
-        Logger.logException(new Exception(clientJson + " - " + chatId));
-        continue;
-      }
-      if (c.status == Client.Status.READY_TO_FIGHT) {
-        return c;
-      }
-    }
-    return null;
-  }
-
   static Client getClientByChatId(int chatId) {
     String clientJson = Logger.getClient(Integer.toString(chatId));
     if (clientJson == null) {
       return null;
     }
     return g.fromJson(clientJson, Client.class);
+  }
+
+  static Client[] getClientsByChatIds(Set<Integer> chatIds) {
+    Client[] result = new Client[chatIds.size()];
+    int i = 0;
+    for (int chatId : chatIds) {
+      result[i] = getClientByChatId(chatId);
+      i++;
+    }
+    return result;
   }
 
   static int getMaxUpdateId() {
