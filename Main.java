@@ -3,9 +3,9 @@ package ChatBot;
 import java.lang.InterruptedException;
 import java.lang.Thread;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,11 +18,6 @@ public class Main {
   public static boolean isProd = false;
 
   private static final String[] mainButtons = {"fight", "profile", "wiseman"};
-  private static final String[] fightButtons = {
-    "hit head", "hit torso", "hit legs",
-    "block head", "block torso", "block legs",
-    "drink potion"
-  };
   private static final String[] levelPointsButtons = {
     "improve strength", "improve vitality", "improve luck"
   };
@@ -70,7 +65,7 @@ public class Main {
           throw e;
         }
       }
-      Thread.sleep(500); // 2s 
+      Thread.sleep(500); // 2s
     }
   }
 
@@ -125,7 +120,9 @@ public class Main {
       generateRandomHitBlock(bot);
       Storage.saveClients(bot, client);
 
-      msg(client, "You're now fighting with " + bot.username + ".", fightButtons);
+      msg(client,
+          "You're now fighting with " + bot.username + ".",
+          getFightingButtons(client));
       msg(client, getClientStats(bot));
       sendFightInstruction(client);
     }
@@ -173,7 +170,7 @@ public class Main {
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
       msg(client, "Timeout!");
       msg(opponent, "Timeout!");
-      finishFight(opponent, client); 
+      finishFight(opponent, client);
       Storage.saveClients(opponent, client);
     }
   }
@@ -210,7 +207,7 @@ public class Main {
     }
 
     if (txt.equals("wiseman") || txt.equals("/wiseman")) {
-      msg(client, PhraseGenerator.getWisdom(client)); 
+      msg(client, PhraseGenerator.getWisdom(client));
       return;
     }
 
@@ -249,7 +246,7 @@ public class Main {
       if (client.status == Client.Status.FIGHTING) {
         msg(client, "You're already fighiting with somebody.");
         return;
-      } 
+      }
       if (client.status == Client.Status.READY_TO_FIGHT) {
         msg(client, "You're already searching for a victim.");
         return;
@@ -268,7 +265,7 @@ public class Main {
       if (client.status != Client.Status.FIGHTING) {
         msg(client, "You need to start a fight first.", mainButtons);
         return;
-      } 
+      }
       if (target == null) {
         msg(client, "Don't know how to hit `" + where + "`.");
         return;
@@ -292,33 +289,37 @@ public class Main {
       return;
     }
 
-    if (txt.equals("/potion42")) {
-      if (client.inventory[Game.Item.POTION.ordinal()] <= 0) {
+    if (txt.equals("/healing potion") || txt.startsWith("healing potion [")) {
+      if (!client.hasItem(Game.Item.HPOTION)) {
         msg(client, "You don't have any potions.");
         return;
       }
       consumePotion(client);
       return;
-    } 
+    }
 
     if (txt.equals("/inv42")) {
       // TODO: use StringBuilder instead
+      if (client.inventory.size() == 0) {
+        msg(client, "You don't have anything.");
+        return;
+      }
       String result = "You have:\n";
-      for (int i = 0; i < client.inventory.length; i++) {
-        if (client.inventory[i] == 1) {
-          result += client.inventory[i] + " " + Game.ITEM_VALUES[i].singular + "\n"; 
-        } else if (client.inventory[i] > 1) {
-          result += client.inventory[i] + " " + Game.ITEM_VALUES[i].plural + "\n";
+      for (Map.Entry<Integer, Integer> item : client.inventory.entrySet()) {
+        if (item.getValue() == 1) {
+          result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].singular + "\n";
+        } else if (item.getValue() > 1) {
+          result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].plural + "\n";
         }
       }
       msg(client, result);
       return;
     }
 
-    if (txt.equals("/coin42")) {
-      client.inventory[Game.Item.COIN.ordinal()]++;
+    if (txt.equals("/gp42")) {
+      client.giveItem(Game.Item.HPOTION);
       Storage.saveClient(client);
-      msg(client, Arrays.toString(client.inventory));
+      msg(client, "Now you have " + client.getItemNum(Game.Item.HPOTION) + " potions.");
       return;
     }
 
@@ -329,7 +330,7 @@ public class Main {
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
       msg(client, "Retreat42!");
       msg(opponent, "Retreat42!");
-      finishFight(opponent, client); 
+      finishFight(opponent, client);
       Storage.saveClients(opponent, client);
       return;
     }
@@ -343,7 +344,7 @@ public class Main {
 
     if (client.status == Client.Status.FIGHTING &&
         !txt.startsWith("/")) {
-      String message = txt; 
+      String message = txt;
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
       String sayingPhrase = PhraseGenerator.getSayingPhrase(client, message, opponent);
       msg(client, sayingPhrase);
@@ -352,7 +353,7 @@ public class Main {
     }
 
     if (!txt.startsWith("/")) {
-      String message = "\uD83D\uDCE2 " + client.username + ": " + txt; 
+      String message = "\uD83D\uDCE2 " + client.username + ": " + txt;
       int numListeners = sendToActiveUsers(message) - 1;
       if (numListeners == 0) {
         msg(client, "You were not heard by anyone :(");
@@ -380,7 +381,7 @@ public class Main {
     for (int passiveChatId : passive) {
       activeChats.remove(passiveChatId);
     }
-    return numListeners; 
+    return numListeners;
   }
 
   private static void showProfile(Client client) {
@@ -421,7 +422,7 @@ public class Main {
     if (newValue == 0) {
       msg(client, "Don't know how to improve " + skill + ".");
       return;
-    } 
+    }
     client.levelPoints--;
     msg(client, "You have increased your " + skill + ", it is now "
       + client.strength + ". You have " + client.levelPoints
@@ -432,7 +433,7 @@ public class Main {
   private static void setReadyToFight(Client client) {
     // TODO: set ready to fight and save to index
     client.status = Client.Status.READY_TO_FIGHT;
-    client.readyToFightSince = curTime; 
+    client.readyToFightSince = curTime;
     Storage.saveClient(client);
     readyToFightChats.add(client.chatId);
     sendToActiveUsers(PhraseGenerator.getReadyToFightPhrase(client));
@@ -441,8 +442,12 @@ public class Main {
   private static void startFightReal(Client client, Client opponent) {
     setFightingStatus(client, opponent);
     Storage.saveClients(client, opponent);
-    msg(client, "You're now fighting with " + opponent.username + ".", fightButtons);
-    msg(opponent, "You're now fighting with " + client.username + ".", fightButtons);
+    msg(client,
+        "You're now fighting with " + opponent.username + ".",
+        getFightingButtons(client));
+    msg(opponent,
+        "You're now fighting with " + client.username + ".",
+        getFightingButtons(opponent));
     msg(client, getClientStats(opponent));
     msg(opponent, getClientStats(client));
     sendFightInstruction(client);
@@ -453,6 +458,20 @@ public class Main {
     if (client.fightsWon == 0) {
       msg(client, "You need to choose which part of your body to block and where to hit.");
     }
+  }
+
+  private static String[] getFightingButtons(Client client) {
+    ArrayList<String> buttons = new ArrayList<>(
+      Arrays.asList(new String[] {
+        "hit head", "hit torso", "hit legs",
+        "block head", "block torso", "block legs"
+      })
+    );
+    int numPotions = client.getItemNum(Game.Item.HPOTION);
+    if (numPotions > 0) {
+      buttons.add("healing potion [" + numPotions + "]");
+    }
+    return buttons.toArray(new String[0]);
   }
 
   private static void setHit(Client client, Client.BodyPart target) {
@@ -484,16 +503,19 @@ public class Main {
     if (client.hp > client.getMaxHp()) {
       client.hp = client.getMaxHp();
     }
-    client.inventory[Game.Item.POTION.ordinal()]--;
+    client.takeItem(Game.Item.HPOTION);
     Storage.saveClient(client);
 
-    msg(client, "\u2764\uFE0F Potion consumed, you have " +
-      client.inventory[Game.Item.POTION.ordinal()] + " left. " +
-      "[" + client.hp + "/" + client.getMaxHp() + "]");
+    String clientMsg = "\uD83C\uDF76 Potion consumed, you have " +
+        client.getItemNum(Game.Item.HPOTION) + " left. " +
+        "[" + client.hp + "/" + client.getMaxHp() + "]";
     if (client.status == Client.Status.FIGHTING) {
+      msg(client, clientMsg, getFightingButtons(client));
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
-      msg(opponent, "\u2764\uFE0F " + client.username + " have consumed a healing potion " + 
+      msg(opponent, "\uD83C\uDF76 " + client.username + " have consumed a healing potion " +
       "[" + client.hp + "/" + client.getMaxHp() + "]");
+    } else {
+      msg(client, clientMsg);
     }
   }
 
@@ -547,7 +569,7 @@ public class Main {
     String victimPrefix = "\uD83D\uDEE1 ";
     if (victim.block == client.hit) {
       hitPhrase =
-        PhraseGenerator.getBlockPhrase(client, victim, client.hit);  
+        PhraseGenerator.getBlockPhrase(client, victim, client.hit);
       msg(victim, victimPrefix + hitPhrase);
       msg(client, clientPrefix + hitPhrase);
       return;
@@ -628,8 +650,8 @@ public class Main {
     winner.fightsWon++;
     winner.totalFights++;
     loser.totalFights++;
-    int expGained = getExperience(loser);  
-    winner.exp += expGained; 
+    int expGained = getExperience(loser);
+    winner.exp += expGained;
     winner.status = Client.Status.IDLE;
     loser.status = Client.Status.IDLE;
     fightingChats.remove(winner.chatId);
@@ -638,12 +660,9 @@ public class Main {
     loser.timeoutWarningSent = false;
     sendToActiveUsers(PhraseGenerator.getWonPhrase(winner, loser));
     msg(winner, "You gained " + expGained + " experience.");
-    if (loser.chatId < 0) {
-      int rnd = Utils.rndInRange(1, 4);
-      if (rnd == 1) {
-        winner.inventory[Game.Item.POTION.ordinal()]++;
-        msg(winner, "You found 1 healing potion.");
-      }
+    if (loser.chatId > 0) {
+      winner.giveItem(Game.Item.HPOTION);
+      msg(winner, "You found 1 healing potion!");
     }
     if (winner.hp < winner.getMaxHp() && winner.chatId > 0) {
       msg(winner, "Fight is finished. Your health will recover in "
@@ -668,14 +687,14 @@ public class Main {
   }
 
   private static String getClientStats(Client client) {
-    String result = "*" + client.username + "*\n" 
+    String result = "*" + client.username + "*\n"
       + "Level: " + client.level + "\n"
       + "Health: " + client.hp + " (out of " + client.getMaxHp() + ")\n"
       + "Damage: 1 - " + client.getMaxDamage() + "\n"
       + "Strength: " + client.strength  + "\n"
       + "Vitality: " + client.vitality + "\n"
       + "Luck: " + client.luck;
-    if (client.chatId > 0) {  
+    if (client.chatId > 0) {
       result += "\n"
         + "Experience: " + client.exp + " "
         + "(" + nextExp(client) + " needed to level up)\n"
@@ -705,7 +724,7 @@ public class Main {
   private static void setFightingStatus(Client client, Client opponent, int first) {
     client.status = Client.Status.FIGHTING;
     client.fightingChatId = opponent.chatId;
-    client.lastFightActivitySince = curTime; 
+    client.lastFightActivitySince = curTime;
     client.timeoutWarningSent = false;
     readyToFightChats.remove(client.chatId);
     fightingChats.add(client.chatId);

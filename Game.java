@@ -27,7 +27,7 @@ class Game {
     BANDAGE("bandage", "bandages"), WAX("gr of wax", "gr of wax"),
     FANG("fang", "fangs"), CLAW("claw", "claws"), ASH("gr of ash", "gr of ash"),
     PAPER("sheet of paper", "sheets of paper"), SILVER("silver piece", "silver pieces"),
-    GOLD("golden piece", "golden pieces"), POTION("healing potion", "healing potions");
+    GOLD("golden piece", "golden pieces"), HPOTION("healing potion", "healing potions");
     
     String singular, plural;
 

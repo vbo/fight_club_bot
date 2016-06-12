@@ -1,5 +1,7 @@
 package ChatBot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -32,7 +34,12 @@ class Client {
   int levelPoints = 0;
 
   int hp;
-  int[] inventory = new int[Game.ITEM_VALUES.length];
+  Map<Integer, Integer> inventory = new HashMap<>(Game.ITEM_VALUES.length);
+
+  // Called for all versions of clients saved in storage.
+  Client() {
+    Map<Integer, Integer> inventory = new HashMap<>(Game.ITEM_VALUES.length);
+  }
 
   Client(int chatId, String username) {
     this.chatId = chatId;
@@ -70,6 +77,41 @@ class Client {
     hp = getMaxHp();
   }
 
+  public int getMaxHp() {
+    return 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
+  }
+
+  public int getMaxDamage() {
+    return Main.HP_UNIT + strength - 3;
+  }
+
+  public void giveItem(Game.Item item) {
+    Integer curHave = inventory.get(item.ordinal());
+    curHave = curHave == null ? 0 : curHave;
+    inventory.put(item.ordinal(), ++curHave);
+  }
+
+  public void takeItem(Game.Item item) {
+    Integer curHave = inventory.get(item.ordinal());
+    curHave = curHave == null ? 0 : curHave;
+    if (curHave - 1 == 0) {
+      inventory.remove(item.ordinal());
+    }
+    inventory.put(item.ordinal(), --curHave);
+  }
+
+  public boolean hasItem(Game.Item item) {
+    Integer curHave = inventory.get(item.ordinal());
+    curHave = curHave == null ? 0 : curHave;
+    return curHave > 0;
+  }
+
+  public int getItemNum(Game.Item item) {
+    Integer curHave = inventory.get(item.ordinal());
+    curHave = curHave == null ? 0 : curHave;
+    return curHave.intValue(); 
+  }
+
   private BotConfig pickBotType() {
     List<BotConfig> eligible = new LinkedList<>();
     for (BotConfig bc : Game.BOT_TYPES) {
@@ -78,14 +120,6 @@ class Client {
       }
     }
     return Utils.getRnd(eligible.toArray(new BotConfig[0]));
-  }
-
-  public int getMaxHp() {
-    return 9 * Main.HP_UNIT + (vitality - 3) * Main.HP_UNIT;
-  }
-
-  public int getMaxDamage() {
-    return Main.HP_UNIT + strength - 3;
   }
 }
 
