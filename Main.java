@@ -20,7 +20,8 @@ public class Main {
   private static final String[] mainButtons = {"fight", "profile", "wiseman"};
   private static final String[] fightButtons = {
     "hit head", "hit torso", "hit legs",
-    "block head", "block torso", "block legs"
+    "block head", "block torso", "block legs",
+    "drink potion"
   };
   private static final String[] levelPointsButtons = {
     "improve strength", "improve vitality", "improve luck"
@@ -292,9 +293,34 @@ public class Main {
     }
 
     if (txt.equals("/potion42")) {
+      if (client.inventory[Game.Item.POTION.ordinal()] <= 0) {
+        msg(client, "You don't have any potions.");
+        return;
+      }
       consumePotion(client);
       return;
     } 
+
+    if (txt.equals("/inv42")) {
+      // TODO: use StringBuilder instead
+      String result = "You have:\n";
+      for (int i = 0; i < client.inventory.length; i++) {
+        if (client.inventory[i] == 1) {
+          result += client.inventory[i] + " " + Game.ITEM_VALUES[i].singular + "\n"; 
+        } else if (client.inventory[i] > 1) {
+          result += client.inventory[i] + " " + Game.ITEM_VALUES[i].plural + "\n";
+        }
+      }
+      msg(client, result);
+      return;
+    }
+
+    if (txt.equals("/coin42")) {
+      client.inventory[Game.Item.COIN.ordinal()]++;
+      Storage.saveClient(client);
+      msg(client, Arrays.toString(client.inventory));
+      return;
+    }
 
     if (txt.equals("/retreat42")) {
       if (client.status != Client.Status.FIGHTING) {
@@ -454,12 +480,21 @@ public class Main {
   }
 
   private static void consumePotion(Client client) {
-    client.hp = client.getMaxHp();
+    client.hp += HP_UNIT;
     if (client.hp > client.getMaxHp()) {
       client.hp = client.getMaxHp();
     }
-    msg(client, "Potion consumed.");
+    client.inventory[Game.Item.POTION.ordinal()]--;
     Storage.saveClient(client);
+
+    msg(client, "\u2764\uFE0F Potion consumed, you have " +
+      client.inventory[Game.Item.POTION.ordinal()] + " left. " +
+      "[" + client.hp + "/" + client.getMaxHp() + "]");
+    if (client.status == Client.Status.FIGHTING) {
+      Client opponent = Storage.getClientByChatId(client.fightingChatId);
+      msg(opponent, "\u2764\uFE0F " + client.username + " have consumed a healing potion " + 
+      "[" + client.hp + "/" + client.getMaxHp() + "]");
+    }
   }
 
   private static Client.BodyPart getBodyPartFromString(String str) {
@@ -603,6 +638,13 @@ public class Main {
     loser.timeoutWarningSent = false;
     sendToActiveUsers(PhraseGenerator.getWonPhrase(winner, loser));
     msg(winner, "You gained " + expGained + " experience.");
+    if (loser.chatId < 0) {
+      int rnd = Utils.rndInRange(1, 4);
+      if (rnd == 1) {
+        winner.inventory[Game.Item.POTION.ordinal()]++;
+        msg(winner, "You found 1 healing potion.");
+      }
+    }
     if (winner.hp < winner.getMaxHp() && winner.chatId > 0) {
       msg(winner, "Fight is finished. Your health will recover in "
         + 3*(winner.getMaxHp() - winner.hp) + " seconds.", mainButtons);

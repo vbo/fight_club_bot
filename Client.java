@@ -4,25 +4,10 @@ import java.util.List;
 import java.util.LinkedList;
 
 class Client {
-  private static final BotConfig[] botTypes = {
-    new BotConfig("Beggar", new int[] {1,3}, new int[] {1,1,6}),
-    new BotConfig("Drunk", new int[] {1,3}, new int[] {1,6,1}),
-    new BotConfig("Crackhead", new int[] {1,3}, new int[] {6,1,1}),
-    new BotConfig("Skeleton", new int[] {4,6}, new int[] {4,4,1}),
-    new BotConfig("Zombie", new int[] {4,6}, new int[] {6,1,1}),
-    new BotConfig("Ghost", new int[] {4,6}, new int[] {1,1,6}),
-    new BotConfig("Mummy", new int[] {7,9}, new int[] {1,1,1}),
-    new BotConfig("Lich", new int[] {7,9}, new int[] {4,4,1}),
-    new BotConfig("Vampire", new int[] {7,9}, new int[] {1,6,1}),
-    new BotConfig("Ghoul", new int[] {10,12}, new int[] {6,1,1}),
-    new BotConfig("Undead", new int[] {10,12}, new int[] {1,6,1}),
-    new BotConfig("Necromant", new int[] {10,12}, new int[] {1,1,6}),
-    new BotConfig("Devil", new int[] {12,20}, new int[] {1,1,6}),
-    new BotConfig("Demon", new int[] {12,20}, new int[] {1,1,1})
-  };
-
+  // TODO: Status and body port should move to Game
   enum Status {FIGHTING, IDLE, READY_TO_FIGHT};
   enum BodyPart {HEAD, TORSO, LEGS};
+
   String username;
   int chatId = 0;
   boolean nameChangeHintSent = false;
@@ -47,6 +32,7 @@ class Client {
   int levelPoints = 0;
 
   int hp;
+  int[] inventory = new int[Game.ITEM_VALUES.length];
 
   Client(int chatId, String username) {
     this.chatId = chatId;
@@ -86,7 +72,7 @@ class Client {
 
   private BotConfig pickBotType() {
     List<BotConfig> eligible = new LinkedList<>();
-    for (BotConfig bc : botTypes) {
+    for (BotConfig bc : Game.BOT_TYPES) {
       if (level >= bc.minLevel && level <= bc.maxLevel) {
         eligible.add(bc);
       }
@@ -100,19 +86,6 @@ class Client {
 
   public int getMaxDamage() {
     return Main.HP_UNIT + strength - 3;
-  }
-}
-
-class BotConfig {
-  int minLevel, maxLevel;
-  int[] characteristics;
-  String name;
-
-  BotConfig(String name, int[] levels, int[] characteristics) {
-    this.name = name;
-    this.minLevel = levels[0];
-    this.maxLevel = levels[1];
-    this.characteristics = characteristics;
   }
 }
 
