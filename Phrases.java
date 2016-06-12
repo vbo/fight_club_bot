@@ -209,9 +209,10 @@ class Phrases {
     "The Gods? There are two of them I heard, one has a very long beard "
       + "and another one is very smart. Well, Gods are always smart, "
       + "arent't they?",
-    "Have you ever seen a healing potion? They are very rare. I've heard one "
-      + "can acquire them after winning a real opponent. Those who have found them "
-      + " were able to beat far more superior enemies."
+    "Have you ever seen a healing potion? They are very rare when fighting regular folks. "
+      + "I've heard one can acquire them for sure after winning a real opponent. " 
+      + "Rumor has it, those who have found them were able to beat far more superior "
+      + "enemies."
   };
 
   static final String[] won = {

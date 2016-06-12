@@ -665,6 +665,12 @@ public class Main {
     if (loser.chatId > 0) {
       winner.giveItem(Game.Item.HPOTION);
       msg(winner, "You found 1 healing potion!");
+    } else {
+      int rnd = Utils.rndInRange(1,4);
+      if (rnd == 1) {
+        winner.giveItem(Game.Item.HPOTION);
+        msg(winner, "You found 1 healing potion!");
+      }
     }
     if (winner.hp < winner.getMaxHp() && winner.chatId > 0) {
       msg(winner, "Fight is finished. Your health will recover in "
