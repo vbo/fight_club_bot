@@ -209,13 +209,9 @@ class Phrases {
     "The Gods? There are two of them I heard, one has a very long beard "
       + "and another one is very smart. Well, Gods are always smart, "
       + "arent't they?",
-    "Do not go where the path may lead, go instead where there is "
-      + "no path and leave a trail.", 
-    "Older men declare war. But it is youth that must fight and die.",
-    "Whenever you are confronted with an opponent. Conquer him with love.",
-    "Swearing doesn't make your argument valid; it just tells the other "
-      + "person you have lost your class and control.",
-    "I'm tired today, you should come later on."
+    "Have you ever seen a healing potion? They are very rare. I've heard one "
+      + "can acquire them after winning a real opponent. Those who have found them "
+      + " were able to beat far more superior enemies."
   };
 
   static final String[] won = {
