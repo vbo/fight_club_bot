@@ -1,13 +1,12 @@
 TODO:
-- Simplify the hit&block: make less options and one action only
-- Add nice buttons for inventory and potion drinking
-
-IDEAS:
 - Crafting
   - Define which mobs drop what
   - Make a crafting recipe & craft button
   - Make a characteristic (Crafting) which influences chance to get a potion
   - Give exp for succesful brewing
+  - Add nice buttons for inventory
+
+IDEAS:
 - Add a shop
 - Add leaderboard / stats
 - Fight many to many, many to one

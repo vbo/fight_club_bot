@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +22,10 @@ import com.google.gson.JsonDeserializationContext;
 class TelegramApi {
   static final String TOKEN_PROD = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
   static final String TOKEN_DEV = "202943285:AAGPfX6FqP2GSjR3BRCZd3BD0eDKjeL_CF4";
+  static final String HELP_FILE_DEV = "AgADBAADtKcxG0SvrwjCqY56n96oucv8QhkABD_WV_RszYklpO4BAAEC";
+  static final String HELP_FILE_PROD = "AgADBAADs6cxG0SvrwibdxFOZuql1NHJWRkABCIdP76U1Q_UPgIAAgI";
   static String token = TOKEN_DEV;
+  static String helpFile = HELP_FILE_DEV;
   private static final String URL = "https://api.telegram.org/bot";
   private final String method;
   private final String params;
@@ -29,6 +33,11 @@ class TelegramApi {
   private static Gson g = new Gson();
 
   public static void say(int chatId, String text, String[] buttonTexts) {
+    try {
+      text = URLEncoder.encode(text, "UTF-8");
+    } catch (Exception e) {
+      Logger.logException(e);
+    }
     String params = "chat_id=" + chatId + "&text=" + text;
     if (buttonTexts.length > 0) {
       int numberOfRows = (int)Math.ceil(buttonTexts.length/3.0);
@@ -49,6 +58,12 @@ class TelegramApi {
       params += "&reply_markup={\"keyboard\":" + g.toJson(arr) + "}";
     }
     TelegramApi req = new TelegramApi("sendMessage", params);
+    req.execute();
+  }
+
+  public static void sendHelp(int chatId) {
+    String params = "chat_id=" + chatId + "&photo=" + helpFile;
+    TelegramApi req = new TelegramApi("sendPhoto", params);
     req.execute();
   }
 

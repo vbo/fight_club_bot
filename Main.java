@@ -80,6 +80,7 @@ public class Main {
     if (args.length > 1 && args[1].equals("PROD")) {
       isProd = true;
       TelegramApi.token = TelegramApi.TOKEN_PROD;
+      TelegramApi.helpFile = TelegramApi.HELP_FILE_PROD;
     }
 
     // Read active & ready to fight clients
@@ -197,6 +198,7 @@ public class Main {
 
     if (newClient) {
       msg(client, "Welcome to the Fight Club!", mainButtons);
+      TelegramApi.sendHelp(client.chatId);
       sendToActiveUsers(client.username + " joined the Fight Club!");
     }
 

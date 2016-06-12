@@ -102,7 +102,6 @@ class Logger {
       PrintWriter out = new PrintWriter(exceptionsLog);
       out.println(stackTrace);
       out.close();
-      System.out.println("ded");
       if (!Main.isProd) {
         System.out.println(stackTrace);
         System.exit(1);
@@ -116,7 +115,6 @@ class Logger {
       };
       Runtime.getRuntime().exec(cmd);
     } catch (IOException e2) {
-      System.out.println("ded");
       log(e2.toString());
       System.exit(1);
     }
