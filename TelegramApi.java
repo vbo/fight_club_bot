@@ -12,6 +12,9 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -20,17 +23,30 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonDeserializationContext;
 
 class TelegramApi {
-  static final String TOKEN_PROD = "224259678:AAFl8SSyGhq3gwp99x1YNu5XdCbyIjgP3ns";
-  static final String TOKEN_DEV = "202943285:AAGPfX6FqP2GSjR3BRCZd3BD0eDKjeL_CF4";
-  static final String HELP_FILE_DEV = "AgADBAADtKcxG0SvrwjCqY56n96oucv8QhkABD_WV_RszYklpO4BAAEC";
-  static final String HELP_FILE_PROD = "AgADBAADs6cxG0SvrwibdxFOZuql1NHJWRkABCIdP76U1Q_UPgIAAgI";
-  static String token = TOKEN_DEV;
-  static String helpFile = HELP_FILE_DEV;
+  static String token;
+  static String helpFile;
   private static final String URL = "https://api.telegram.org/bot";
   private final String method;
   private final String params;
   HttpURLConnection connection;
   private static Gson g = new Gson();
+
+  private class Config {
+    String token;
+    String file;
+  }
+
+  public static void initialize() {
+    try {
+      String configText = Logger.getConfigText();
+      Config c = g.fromJson(configText, Config.class);
+      token =  c.token;
+      helpFile = c.file;
+    } catch (IOException e) {
+      Logger.logException(e);
+      System.exit(4);
+    }
+  }
 
   public static void say(int chatId, String text, String[] buttonTexts) {
     try {

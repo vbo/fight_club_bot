@@ -76,11 +76,10 @@ public class Main {
     }
     Logger.setDbPath(args[0]);
     Logger.initialize();
+    TelegramApi.initialize();
 
     if (args.length > 1 && args[1].equals("PROD")) {
       isProd = true;
-      TelegramApi.token = TelegramApi.TOKEN_PROD;
-      TelegramApi.helpFile = TelegramApi.HELP_FILE_PROD;
     }
 
     // Read active & ready to fight clients
