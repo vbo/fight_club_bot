@@ -32,6 +32,7 @@ class Logger {
   private static String exceptionsLog;
   private static final String EXT = ".db";
   private static final String BACKUP_FILE = ".backup";
+  private static final String CONFIG_FILE = "config.json";
   private static PrintWriter logsWriter;
 
   public static void initialize() {
@@ -118,6 +119,15 @@ class Logger {
       log(e2.toString());
       System.exit(1);
     }
+  }
+
+  static String getConfigText() throws IOException {
+    String value = null;
+    FileReader fr = new FileReader(CONFIG_FILE);
+    BufferedReader br = new BufferedReader(fr);
+    value = br.readLine();
+    br.close();
+    return value;
   }
 
   static void setDbPath(String path) {
