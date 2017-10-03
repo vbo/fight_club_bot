@@ -76,6 +76,7 @@ public class Main {
     }
     Logger.setDbPath(args[0]);
     Logger.initialize();
+    Phrases.initialize();
 
     if (args.length > 1 && args[1].equals("PROD")) {
       isProd = true;
