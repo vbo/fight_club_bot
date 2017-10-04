@@ -156,8 +156,8 @@ class Logger {
 
   private static void restoreClientsFromBackup() {
     try {
-      FileReader fr = new FileReader(clientsPath + BACKUP_FILE);
-      BufferedReader br = new BufferedReader(fr);
+      BufferedReader br = new BufferedReader(
+          new FileReader(clientsPath + BACKUP_FILE));
       String backupLine = br.readLine();
       Pattern nameExtractor = Pattern.compile("^([-0-9]*)");
       Pattern valueExtractor = Pattern.compile("^.*?;(.*)$");
@@ -187,9 +187,9 @@ class Logger {
   }
 
   private static void makeClientsBackup(String[] filenames) {
-    try (FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
-          BufferedWriter bw = new BufferedWriter(fw);
-          PrintWriter backupWriter = new PrintWriter(bw)) {
+    try (BufferedWriter bw = new BufferedWriter(
+            new FileWriter(clientsPath + BACKUP_FILE));
+         PrintWriter backupWriter = new PrintWriter(bw)) {
       for (int i = 0; i < filenames.length; i++) {
         String value = getClient(filenames[i]);
         backupWriter.println(filenames[i] + ";" + value);
@@ -205,8 +205,7 @@ class Logger {
 
   private static String readOneLineFile(String filename, boolean ignoreErr) {
     String value = null;
-    try (FileReader fr = new FileReader(filename);
-          BufferedReader br = new BufferedReader(fr)) {
+    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
       value = br.readLine();
     } catch (IOException e) {
       if (!ignoreErr) {
@@ -218,8 +217,8 @@ class Logger {
 
   private static PrintWriter getLogsWriter() {
     if (logsWriter == null) {
-      try (FileWriter fw = new FileWriter(logsFile + EXT, true);
-        BufferedWriter bw = new BufferedWriter(fw)) {
+      try (BufferedWriter bw = new BufferedWriter(
+              new FileWriter(logsFile + EXT, true))) {
       logsWriter = new PrintWriter(bw, true);
       } catch (Exception e) {
         Logger.logException(e);
