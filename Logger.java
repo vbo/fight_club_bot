@@ -94,6 +94,17 @@ class Logger {
     }
   }
 
+  private static String readOneLineFile(String filename) {
+    String value = null;
+    try (FileReader fr = new FileReader(filename);
+          BufferedReader br = new BufferedReader(fr)) {
+      value = br.readLine();
+    } catch (IOException e) {
+      Logger.logException(e);
+    } 
+    return value;
+  }
+
   static void logException(Exception e) {
     try {
       StringWriter sw = new StringWriter();
@@ -121,13 +132,13 @@ class Logger {
     }
   }
 
-  static String getConfigText() throws IOException {
-    String value = null;
-    FileReader fr = new FileReader(CONFIG_FILE);
-    BufferedReader br = new BufferedReader(fr);
-    value = br.readLine();
-    br.close();
-    return value;
+  static String getConfigText() {
+    String result = readOneLineFile(CONFIG_FILE);
+    if (result == null || result == "") {
+      Logger.log("Could not read config file with API keys");
+      System.exit(4);
+    }
+    return result;
   }
 
   static void setDbPath(String path) {
@@ -177,14 +188,7 @@ class Logger {
   }
 
   static String getClient(String name) {
-    String value = null;
-    try {
-      FileReader fr = new FileReader(clientsPath + name + EXT);
-      BufferedReader br = new BufferedReader(fr);
-      value = br.readLine();
-      br.close();
-    } catch (Exception e) {}
-    return value;
+    return readOneLineFile(clientsPath + name + EXT);
   }
 
   static void saveIntVar(String name, int value) {
@@ -200,13 +204,7 @@ class Logger {
   }
 
   static Integer getIntVar(String name) {
-    String value = null;
-    try {
-      FileReader fr = new FileReader(varsPath + name + EXT);
-      BufferedReader br = new BufferedReader(fr);
-      value = br.readLine();
-      br.close();
-    } catch (Exception e) {}
+    String value = readOneLineFile(varsPath + name + EXT);
     if (value == null || value == "") {
       return null;
     }

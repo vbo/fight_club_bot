@@ -37,15 +37,10 @@ class TelegramApi {
   }
 
   public static void initialize() {
-    try {
-      String configText = Logger.getConfigText();
-      Config c = g.fromJson(configText, Config.class);
-      token =  c.token;
-      helpFile = c.file;
-    } catch (IOException e) {
-      Logger.logException(e);
-      System.exit(4);
-    }
+    String configText = Logger.getConfigText();
+    Config c = g.fromJson(configText, Config.class);
+    token =  c.token;
+    helpFile = c.file;
   }
 
   public static void say(int chatId, String text, String[] buttonTexts) {
