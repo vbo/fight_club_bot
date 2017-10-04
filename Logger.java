@@ -80,40 +80,42 @@ class Logger {
   }
 
   private static void makeClientsBackup(String[] filenames) {
-    try {
-      FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
-      BufferedWriter bw = new BufferedWriter(fw);
-      PrintWriter backupWriter = new PrintWriter(bw);
+    try (FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
+          BufferedWriter bw = new BufferedWriter(fw);
+          PrintWriter backupWriter = new PrintWriter(bw)) {
       for (int i = 0; i < filenames.length; i++) {
         String value = getClient(filenames[i]);
         backupWriter.println(filenames[i] + ";" + value);
       }
-      backupWriter.close();
     } catch (Exception e) {
       Logger.logException(e);
     }
   }
 
   private static String readOneLineFile(String filename) {
+    return readOneLineFile(filename, false);
+  }
+
+  private static String readOneLineFile(String filename, boolean ignoreErr) {
     String value = null;
     try (FileReader fr = new FileReader(filename);
           BufferedReader br = new BufferedReader(fr)) {
       value = br.readLine();
     } catch (IOException e) {
-      Logger.logException(e);
+      if (!ignoreErr) {
+        Logger.logException(e);
+      }
     } 
     return value;
   }
 
   static void logException(Exception e) {
-    try {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
+    try (StringWriter sw = new StringWriter();
+          PrintWriter pw = new PrintWriter(sw);
+          PrintWriter out = new PrintWriter(exceptionsLog)) {
       e.printStackTrace(pw);
       String stackTrace = sw.toString();
-      PrintWriter out = new PrintWriter(exceptionsLog);
       out.println(stackTrace);
-      out.close();
       if (!Main.isProd) {
         System.out.println(stackTrace);
         System.exit(1);
@@ -178,26 +180,22 @@ class Logger {
   }
 
   static void writeClient(String name, String value) {
-    try {
-      FileWriter fw = new FileWriter(clientsPath + name + EXT, false);
+    try (FileWriter fw = new FileWriter(clientsPath + name + EXT, false)) {
       fw.write(value);
-      fw.close();
     } catch (IOException e) {
       Logger.logException(e);
     }
   }
 
   static String getClient(String name) {
-    return readOneLineFile(clientsPath + name + EXT);
+    return readOneLineFile(clientsPath + name + EXT, true);
   }
 
   static void saveIntVar(String name, int value) {
-    try {
       // TODO: for some variables (maxUpdateId) it would be better to open file once
       // and use flush to save data.
-      FileWriter fw = new FileWriter(varsPath + name + EXT, false);
+    try (FileWriter fw = new FileWriter(varsPath + name + EXT, false)) {
       fw.write(Integer.toString(value));
-      fw.close();
     } catch (IOException e) {
       Logger.logException(e);
     }
@@ -215,19 +213,18 @@ class Logger {
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     Date date = new Date();
     entry = dateFormat.format(date) + " " + entry;
-    try {
-      Logger.getLogsWriter().println(entry);
-    } catch (Exception e) {
-      Logger.logException(e);
-      System.exit(3);
-    }
+    Logger.getLogsWriter().println(entry);
   }
 
-  private static PrintWriter getLogsWriter() throws IOException {
+  private static PrintWriter getLogsWriter() {
     if (logsWriter == null) {
-      FileWriter fw = new FileWriter(logsFile + EXT, true);
-      BufferedWriter bw = new BufferedWriter(fw);
+      try (FileWriter fw = new FileWriter(logsFile + EXT, true);
+        BufferedWriter bw = new BufferedWriter(fw)) {
       logsWriter = new PrintWriter(bw, true);
+      } catch (Exception e) {
+        Logger.logException(e);
+        System.exit(3);
+      }
     }
     return logsWriter;
   }

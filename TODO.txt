@@ -1,4 +1,5 @@
 TODO:
+- Display items owned in the profile (healing potions)
 - Crafting
   - Define which mobs drop what
   - Make a crafting recipe & craft button
