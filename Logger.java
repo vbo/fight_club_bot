@@ -42,73 +42,6 @@ class Logger {
     }
   }
 
-  private static boolean hasClientsBackup() {
-    File f = new File(clientsPath + BACKUP_FILE);
-    return f.exists() && !f.isDirectory();
-  }
-
-  private static void restoreClientsFromBackup() {
-    try {
-      FileReader fr = new FileReader(clientsPath + BACKUP_FILE);
-      BufferedReader br = new BufferedReader(fr);
-      String backupLine = br.readLine();
-      Pattern nameExtractor = Pattern.compile("^([-0-9]*)");
-      Pattern valueExtractor = Pattern.compile("^.*?;(.*)$");
-      while (backupLine != null) {
-        String name = Utils.getMatch(backupLine, nameExtractor);
-        String value = Utils.getMatch(backupLine, valueExtractor);
-        writeClient(name, value);
-        backupLine = br.readLine();
-      }
-      br.close();
-    } catch (Exception e) {
-      logException(e);
-    }
-  }
-
-  private static void removeClientsBackup() {
-    Path p = Paths.get(clientsPath + BACKUP_FILE);
-    try {
-      Files.delete(p);
-    } catch (Exception e) {
-      Logger.logException(e);
-    }
-  }
-
-  private static void makeClientBackup(String filename) {
-    makeClientsBackup(new String[] {filename});
-  }
-
-  private static void makeClientsBackup(String[] filenames) {
-    try (FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
-          BufferedWriter bw = new BufferedWriter(fw);
-          PrintWriter backupWriter = new PrintWriter(bw)) {
-      for (int i = 0; i < filenames.length; i++) {
-        String value = getClient(filenames[i]);
-        backupWriter.println(filenames[i] + ";" + value);
-      }
-    } catch (Exception e) {
-      Logger.logException(e);
-    }
-  }
-
-  private static String readOneLineFile(String filename) {
-    return readOneLineFile(filename, false);
-  }
-
-  private static String readOneLineFile(String filename, boolean ignoreErr) {
-    String value = null;
-    try (FileReader fr = new FileReader(filename);
-          BufferedReader br = new BufferedReader(fr)) {
-      value = br.readLine();
-    } catch (IOException e) {
-      if (!ignoreErr) {
-        Logger.logException(e);
-      }
-    } 
-    return value;
-  }
-
   static void logException(Exception e) {
     try (StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
@@ -214,6 +147,73 @@ class Logger {
     Date date = new Date();
     entry = dateFormat.format(date) + " " + entry;
     Logger.getLogsWriter().println(entry);
+  }
+
+  private static boolean hasClientsBackup() {
+    File f = new File(clientsPath + BACKUP_FILE);
+    return f.exists() && !f.isDirectory();
+  }
+
+  private static void restoreClientsFromBackup() {
+    try {
+      FileReader fr = new FileReader(clientsPath + BACKUP_FILE);
+      BufferedReader br = new BufferedReader(fr);
+      String backupLine = br.readLine();
+      Pattern nameExtractor = Pattern.compile("^([-0-9]*)");
+      Pattern valueExtractor = Pattern.compile("^.*?;(.*)$");
+      while (backupLine != null) {
+        String name = Utils.getMatch(backupLine, nameExtractor);
+        String value = Utils.getMatch(backupLine, valueExtractor);
+        writeClient(name, value);
+        backupLine = br.readLine();
+      }
+      br.close();
+    } catch (Exception e) {
+      logException(e);
+    }
+  }
+
+  private static void removeClientsBackup() {
+    Path p = Paths.get(clientsPath + BACKUP_FILE);
+    try {
+      Files.delete(p);
+    } catch (Exception e) {
+      Logger.logException(e);
+    }
+  }
+
+  private static void makeClientBackup(String filename) {
+    makeClientsBackup(new String[] {filename});
+  }
+
+  private static void makeClientsBackup(String[] filenames) {
+    try (FileWriter fw = new FileWriter(clientsPath + BACKUP_FILE);
+          BufferedWriter bw = new BufferedWriter(fw);
+          PrintWriter backupWriter = new PrintWriter(bw)) {
+      for (int i = 0; i < filenames.length; i++) {
+        String value = getClient(filenames[i]);
+        backupWriter.println(filenames[i] + ";" + value);
+      }
+    } catch (Exception e) {
+      Logger.logException(e);
+    }
+  }
+
+  private static String readOneLineFile(String filename) {
+    return readOneLineFile(filename, false);
+  }
+
+  private static String readOneLineFile(String filename, boolean ignoreErr) {
+    String value = null;
+    try (FileReader fr = new FileReader(filename);
+          BufferedReader br = new BufferedReader(fr)) {
+      value = br.readLine();
+    } catch (IOException e) {
+      if (!ignoreErr) {
+        Logger.logException(e);
+      }
+    } 
+    return value;
   }
 
   private static PrintWriter getLogsWriter() {
