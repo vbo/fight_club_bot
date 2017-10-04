@@ -1,8 +1,9 @@
 package ChatBot;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.FileReader;
 
 class Phrases {
 
@@ -23,6 +24,7 @@ class Phrases {
   static String[][] toHit;
 
   static String getLang() {
+  // TODO(Riboloff): ask the user which language they prefer. Move this to appropriate class.
         return "en";
   };
 
@@ -36,7 +38,7 @@ class Phrases {
           jsonStr += line;
       }
     } catch (Exception e) {
-      System.out.println(e);
+      Logger.logException(e);
     }
 
     return jsonStr;
@@ -46,8 +48,8 @@ class Phrases {
     JsonParser parser = new JsonParser();
     Gson g = new Gson();
     String lang = getLang();
-
     String jsonStr;
+
     try {
       jsonStr = readJsonFile("./text/wasDoingSomething.json");
       wasDoingSomething = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
@@ -92,7 +94,7 @@ class Phrases {
       toHit = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[][].class);
 
     } catch (Exception e) {
-      System.out.println(e);
+      Logger.logException(e);
     }
   }
 }
