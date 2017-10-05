@@ -64,7 +64,7 @@ class Client {
     }
     BotConfig bc = pickBotType();
     this.username = bc.name;
-    for (int i = 0; i < this.level; i++) {
+    for (int i = 1; i < this.level; i++) {
       int ch = Utils.rndInRangeWeighted(bc.characteristics);
       if (ch == 0) {
         strength++;
