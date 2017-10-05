@@ -426,7 +426,7 @@ public class Main {
     }
     client.levelPoints--;
     msg(client, "You have increased your " + skill + ", it is now "
-      + client.strength + ". You have " + client.levelPoints
+      + newValue + ". You have " + client.levelPoints
       + " more level points.", mainButtons);
     Storage.saveClient(client);
   }

@@ -192,8 +192,8 @@ class Phrases {
     "There is a legend about two fighters, they were skilfull and "
       + " clever, but didn't know how to talk to each other. Once "
       + "one of them started typing a message during the fight and it was "
-      + "sent to the opponent, and only the opponent only. And so "
-      + "fighters began to talk",
+      + "sent to the opponent, and the opponent only. And so fighters "
+      + "began to talk.",
     "Do you hear the voices sometimes? I do, everybody does. Gods once "
       + "told me that you can hear them only if you were active "
       + "in the last few minutes. If you go away - the voices will "
