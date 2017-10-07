@@ -301,17 +301,19 @@ public class Main {
 
     if (txt.equals("/inv42")) {
       // TODO: use StringBuilder instead
-      if (client.inventory.size() == 0) {
-        msg(client, "You don't have anything.");
-        return;
-      }
       String result = "You have:\n";
+      int numValues = 0;
       for (Map.Entry<Integer, Integer> item : client.inventory.entrySet()) {
+        numValues += item.getValue();
         if (item.getValue() == 1) {
           result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].singular + "\n";
         } else if (item.getValue() > 1) {
           result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].plural + "\n";
         }
+      }
+      if (numValues == 0) {
+        msg(client, "You don't have anything.");
+        return;
       }
       msg(client, result);
       return;
