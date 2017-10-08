@@ -74,6 +74,10 @@ class Client {
         luck++;
       }
     }
+    for (int i = 0; i < bc.loot.length; i++) {
+      Game.Item item = bc.loot[i];
+      giveItem(item);
+    }
     hp = getMaxHp();
   }
 
