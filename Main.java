@@ -299,26 +299,6 @@ public class Main {
       return;
     }
 
-    if (txt.equals("/inv42")) {
-      // TODO: use StringBuilder instead
-      String result = "You have:\n";
-      int numValues = 0;
-      for (Map.Entry<Integer, Integer> item : client.inventory.entrySet()) {
-        numValues += item.getValue();
-        if (item.getValue() == 1) {
-          result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].singular + "\n";
-        } else if (item.getValue() > 1) {
-          result += item.getValue() + " " + Game.ITEM_VALUES[item.getKey()].plural + "\n";
-        }
-      }
-      if (numValues == 0) {
-        msg(client, "You don't have anything.");
-        return;
-      }
-      msg(client, result);
-      return;
-    }
-
     if (txt.equals("/gp42")) {
       client.giveItem(Game.Item.HPOTION);
       Storage.saveClient(client);
@@ -334,6 +314,18 @@ public class Main {
       msg(client, "Retreat42!");
       msg(opponent, "Retreat42!");
       finishFight(opponent, client);
+      Storage.saveClients(opponent, client);
+      return;
+    }
+
+    if (txt.equals("/kill42")) {
+      if (client.status != Client.Status.FIGHTING) {
+        return;
+      }
+      Client opponent = Storage.getClientByChatId(client.fightingChatId);
+      msg(client, "Kill42 activated!");
+      msg(opponent, "Kill42 activated!");
+      finishFight(client, opponent);
       Storage.saveClients(opponent, client);
       return;
     }
@@ -393,12 +385,32 @@ public class Main {
       msg(client, "You have " + client.levelPoints + " unassigned "
         + "level points.", levelPointsButtons);
     }
+    msg(client, getInventoryDescription(client));
     if (!client.nameChangeHintSent) {
       msg(client, "You can change your name with the following command \n"
         + "`/username newname`.");
       client.nameChangeHintSent = true;
     }
     Storage.saveClient(client);
+  }
+
+  private static String getInventoryDescription(Client client) {
+      StringBuilder result = new StringBuilder("You have:\n");
+      int numValues = 0;
+      for (Map.Entry<Integer, Integer> item : client.inventory.entrySet()) {
+        numValues += item.getValue();
+        if (item.getValue() == 1) {
+          result.append(item.getValue() + " " +
+              Game.ITEM_VALUES[item.getKey()].singular + ".\n");
+        } else if (item.getValue() > 1) {
+          result.append(item.getValue() + " " +
+              Game.ITEM_VALUES[item.getKey()].plural + ".\n");
+        }
+      }
+      if (numValues == 0) {
+        return "You don't have any items.";
+      }
+      return result.toString();
   }
 
   private static void changeUserName(Client client, String newName) {
@@ -667,10 +679,15 @@ public class Main {
       winner.giveItem(Game.Item.HPOTION);
       msg(winner, "You found 1 healing potion!");
     } else {
+      // logic for looting bots is here
       int rnd = Utils.rndInRange(1,4);
       if (rnd == 1) {
         winner.giveItem(Game.Item.HPOTION);
         msg(winner, "You found 1 healing potion!");
+      } else if (rnd < 4) {
+        Game.Item found = Game.ITEM_VALUES[Utils.getRnd(loser.inventory)];
+        winner.giveItem(found);
+        msg(winner, "You found 1 " + found.singular +  "!");
       }
     }
     if (winner.hp < winner.getMaxHp() && winner.chatId > 0) {
@@ -714,6 +731,7 @@ public class Main {
   }
 
   private static int getDamage(Client client) {
+    // TODO(lenny): lvl30 has 100% chance to give crit?!
     int critRnd = Utils.rndInRange(0, 30);
     if (critRnd < client.luck) {
       return client.getMaxDamage() + Utils.rndInRange(0, client.getMaxDamage());

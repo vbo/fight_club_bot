@@ -1,7 +1,12 @@
 package ChatBot;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 class Utils {
   static String getMatch(String str, Pattern p) {
@@ -34,6 +39,17 @@ class Utils {
   static <K> K getRnd(K[] arr) {
     assert arr.length > 0;
     return arr[rndInRange(0, arr.length - 1)];
+  }
+
+  static <K> K getRnd(Map<K, Integer> map) {
+    Set<K> keyset = map.keySet();
+    List<K> list = new ArrayList<K>();
+    for (K key : keyset) {
+      for (int i = 0; i < map.get(key); i++) {
+        list.add(key);
+      }
+    }
+    return list.get(rndInRange(0, list.size() -1));
   }
 }
 
