@@ -135,7 +135,7 @@ class Logger {
   }
 
   static Integer getIntVar(String name) {
-    String value = readOneLineFile(varsPath + name + EXT);
+    String value = readOneLineFile(varsPath + name + EXT, true);
     if (value == null || value == "") {
       return null;
     }
