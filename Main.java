@@ -680,7 +680,7 @@ public class Main {
       msg(winner, "You found 1 healing potion!");
     } else {
       // logic for looting bots is here
-      int rnd = Utils.rndInRange(1,4);
+      int rnd = Utils.rndInRange(1,6);
       if (rnd == 1) {
         winner.giveItem(Game.Item.HPOTION);
         msg(winner, "You found 1 healing potion!");
