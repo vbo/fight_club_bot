@@ -685,7 +685,8 @@ public class Main {
         winner.giveItem(Game.Item.HPOTION);
         msg(winner, "You found 1 healing potion!");
       } else if (rnd < 4) {
-        Game.Item found = Game.ITEM_VALUES[Utils.getRnd(loser.inventory)];
+        Game.Item found = Game.ITEM_VALUES[Utils.getRndKeyWithWeight(
+            loser.inventory)];
         winner.giveItem(found);
         msg(winner, "You found 1 " + found.singular +  "!");
       }
