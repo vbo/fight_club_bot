@@ -399,13 +399,17 @@ public class Main {
       int numValues = 0;
       for (Map.Entry<Integer, Integer> item : client.inventory.entrySet()) {
         numValues += item.getValue();
-        if (item.getValue() == 1) {
-          result.append(item.getValue() + " " +
-              Game.ITEM_VALUES[item.getKey()].singular + ".\n");
-        } else if (item.getValue() > 1) {
-          result.append(item.getValue() + " " +
-              Game.ITEM_VALUES[item.getKey()].plural + ".\n");
+        if (item.getValue() <= 0) {
+          continue;
         }
+        result.append(item.getValue());
+        result.append(" ");
+        if (item.getValue() == 1) {
+          result.append(Game.ITEM_VALUES[item.getKey()].singular);
+        } else if (item.getValue() > 1) {
+          result.append(Game.ITEM_VALUES[item.getKey()].plural);
+        }
+        result.append(".\n");
       }
       if (numValues == 0) {
         return "You don't have any items.";
