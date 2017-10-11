@@ -185,9 +185,11 @@ public class Main {
     Client client = Storage.getClientByChatId(chatId);
     boolean newClient = client == null;
     if (newClient) {
-      String username = upd.message.from.first_name;
-      if (upd.message.from.last_name != null) {
-        username = username + " " + upd.message.from.last_name;
+      String username;
+      if (upd.message.from.username != null) {
+        username = upd.message.from.username;
+      } else {
+        username = upd.message.from.first_name;
       }
       client = new Client(chatId, username);
     }

@@ -21,6 +21,7 @@ class Telegram {
 
   class User {
     int id;
+    String username;
     String first_name;
     String last_name;
   }
