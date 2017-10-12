@@ -217,20 +217,16 @@ class Logger {
 
   static String readAllFile(String filename) {
     String jsonStr = "";
-    try {
-      FileReader fr = new FileReader(filename);
-      BufferedReader br = new BufferedReader(fr);
+    try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
       String line = "";
       while ((line = br.readLine()) != null) {
-          jsonStr += line;
+        jsonStr += line;
       }
     } catch (Exception e) {
       Logger.logException(e);
     }
-
     return jsonStr;
   }
-
 
   private static PrintWriter getLogsWriter() {
     if (logsWriter == null) {
