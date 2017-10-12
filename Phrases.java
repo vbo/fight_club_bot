@@ -35,51 +35,46 @@ class Phrases {
     String lang = getLang();
     String jsonStr;
 
-    try {
-      jsonStr = Logger.readAllFile("./text/wasDoingSomething.json");
-      wasDoingSomething = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/wasDoingSomething.json");
+    wasDoingSomething = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/when.json");
-      when = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/when.json");
+    when = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/adjective.json");
-      adjective = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/adjective.json");
+    adjective = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/wasTrying.json");
-      wasTrying = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/wasTrying.json");
+    wasTrying = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/but.json");
-      but = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/but.json");
+    but = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/blocked.json");
-      blocked = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/blocked.json");
+    blocked = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/missed.json");
-      missed = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/missed.json");
+    missed = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/said.json");
-      said = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/said.json");
+    said = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/wisdomIntro.json");
-      wisdomIntro = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/wisdomIntro.json");
+    wisdomIntro = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/wisdoms.json");
-      wisdoms = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/wisdoms.json");
+    wisdoms = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/won.json");
-      won = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/won.json");
+    won = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/lookingForOpponent.json");
-      lookingForOpponent = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
+    jsonStr = Logger.readAllFile("./text/lookingForOpponent.json");
+    lookingForOpponent = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[].class);
 
-      jsonStr = Logger.readAllFile("./text/hit.json");
-      hit = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[][].class);
+    jsonStr = Logger.readAllFile("./text/hit.json");
+    hit = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[][].class);
 
-      jsonStr = Logger.readAllFile("./text/toHit.json");
-      toHit = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[][].class);
-
-    } catch (Exception e) {
-      Logger.logException(e);
-    }
+    jsonStr = Logger.readAllFile("./text/toHit.json");
+    toHit = g.fromJson(parser.parse(jsonStr).getAsJsonObject().getAsJsonArray(lang), String[][].class);
   }
 }
