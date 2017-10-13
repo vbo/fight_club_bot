@@ -18,6 +18,7 @@ public class Main {
   public static boolean isProd = false;
 
   private static final String[] mainButtons = {"fight", "profile", "wiseman"};
+  private static final String[] langButtons = {"English", "Русский"};
   private static final String[] levelPointsButtons = {
     "improve strength", "improve vitality", "improve luck"
   };
@@ -201,12 +202,25 @@ public class Main {
     if (newClient) {
       msg(client, "Welcome to the Fight Club!", mainButtons);
       TelegramApi.sendHelp(client.chatId);
+      msg(client, "What language do you prefer?", langButtons);
       sendToActiveUsers(client.username + " joined the Fight Club!");
     }
 
     String txt = upd.message.text;
 
     if (txt.equals("/start")) {
+      return;
+    }
+
+    if (txt.equals("English")) {
+      setLanguage(client, "en");
+      msg(client, "English language is set.", mainButtons);
+      return;
+    }
+
+    if (txt.equals("Русский")) {
+      setLanguage(client, "ru");
+      msg(client, "Включен русский язык.", mainButtons);
       return;
     }
 
@@ -418,6 +432,11 @@ public class Main {
         return "You don't have any items.";
       }
       return result.toString();
+  }
+
+  private static void setLanguage(Client client, String lang) {
+    client.lang = lang;
+    Storage.saveClient(client);
   }
 
   private static void changeUserName(Client client, String newName) {

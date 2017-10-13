@@ -11,6 +11,8 @@ class Client {
   enum BodyPart {HEAD, TORSO, LEGS};
 
   String username;
+  //TODO(lenny): add unkown language by default and ask players to provide one.
+  String lang = "en";
   int chatId = 0;
   boolean nameChangeHintSent = false;
   BodyPart hit = null;
