@@ -31,15 +31,25 @@ class Phrases {
     Map<String, String[]> wisdoms;
   }
 
+
+  class Misc {
+    Map<String, String> joinedTheFightClub;
+  }
+
   static WiseTexts wiseTexts;
   static CombatTexts combatTexts;
+  static Misc miscTexts;
 
   public static void initialize() {
     Gson g = new Gson();
+    //TODO(lenny): dehardcode file names?
     String jsonStr = Logger.readAllFile("./text/combats.json");
     combatTexts = g.fromJson(jsonStr, CombatTexts.class);
 
     jsonStr = Logger.readAllFile("./text/wise.json");
     wiseTexts = g.fromJson(jsonStr, WiseTexts.class);
+
+    jsonStr = Logger.readAllFile("./text/misc.json");
+    miscTexts = g.fromJson(jsonStr, Misc.class);
   }
 }

@@ -203,7 +203,8 @@ public class Main {
       msg(client, "Welcome to the Fight Club!", mainButtons);
       TelegramApi.sendHelp(client.chatId);
       msg(client, "What language do you prefer?", langButtons);
-      sendToActiveUsers(client.username + " joined the Fight Club!");
+      sendToActiveUsers(PhraseGenerator.getJoinedTheFightClub(
+          client.username));
     }
 
     String txt = upd.message.text;
@@ -225,7 +226,7 @@ public class Main {
     }
 
     if (txt.equals("wiseman") || txt.equals("/wiseman")) {
-      msg(client, PhraseGenerator.getWisdom(client));
+      msg(client, PhraseGenerator.getWisdom(client).get(client.lang));
       return;
     }
 
@@ -358,9 +359,10 @@ public class Main {
         !txt.startsWith("/")) {
       String message = txt;
       Client opponent = Storage.getClientByChatId(client.fightingChatId);
-      String sayingPhrase = PhraseGenerator.getSayingPhrase(client, message, opponent);
-      msg(client, sayingPhrase);
-      msg(opponent, sayingPhrase);
+      Map<String, String> sayingPhrase = PhraseGenerator.getSayingPhrase(client,
+          message, opponent);
+      msg(client, sayingPhrase.get(client.lang));
+      msg(opponent, sayingPhrase.get(client.lang));
       return;
     }
 
@@ -378,7 +380,28 @@ public class Main {
   }
 
   // returns number of people who heard you
+  private static int sendToActiveUsers(Map<String, String> message) {
+    // If changed - also change the other function with the same name.
+    int numListeners = 0;
+    List<Integer> passive = new LinkedList<>();
+    for (int recepientChatId : activeChats) {
+      Client recepient = Storage.getClientByChatId(recepientChatId);
+      if (recepient.lastActivity > curTime - CHAT_TIMEOUT) {
+        msg(recepient, message.get(recepient.lang));
+        numListeners++;
+      } else {
+        passive.add(recepientChatId);
+      }
+    }
+    for (int passiveChatId : passive) {
+      activeChats.remove(passiveChatId);
+    }
+    return numListeners;
+  }
+
+  // returns number of people who heard you. Does not support translations.
   private static int sendToActiveUsers(String message) {
+    // If changed - also change the other function with the same name.
     int numListeners = 0;
     List<Integer> passive = new LinkedList<>();
     for (int recepientChatId : activeChats) {
@@ -605,14 +628,14 @@ public class Main {
   }
 
   private static void makeAHit(Client client, Client victim) {
-    String hitPhrase = "";
+    Map<String, String> hitPhrase;
     String clientPrefix = "\uD83D\uDDE1 ";
     String victimPrefix = "\uD83D\uDEE1 ";
     if (victim.block == client.hit) {
       hitPhrase =
         PhraseGenerator.getBlockPhrase(client, victim, client.hit);
-      msg(victim, victimPrefix + hitPhrase);
-      msg(client, clientPrefix + hitPhrase);
+      msg(victim, victimPrefix + hitPhrase.get(victim.lang));
+      msg(client, clientPrefix + hitPhrase.get(client.lang));
       return;
     }
     int clientHits = getDamage(client);
@@ -620,8 +643,8 @@ public class Main {
     if (clientHits == 0) {
       hitPhrase =
         PhraseGenerator.getMissPhrase(client, victim, client.hit);
-      msg(victim, victimPrefix + hitPhrase);
-      msg(client, clientPrefix + hitPhrase);
+      msg(victim, victimPrefix + hitPhrase.get(victim.lang));
+      msg(client, clientPrefix + hitPhrase.get(client.lang));
       return;
     }
     hitPhrase = PhraseGenerator.getHitPhrase(
@@ -631,8 +654,8 @@ public class Main {
       clientHits > client.getMaxDamage(),
       clientHits
     );
-    msg(victim, victimPrefix + hitPhrase);
-    msg(client, clientPrefix + hitPhrase);
+    msg(victim, victimPrefix + hitPhrase.get(victim.lang));
+    msg(client, clientPrefix + hitPhrase.get(client.lang));
   }
 
   private static void handleHit(Client client, Client opponent) {
