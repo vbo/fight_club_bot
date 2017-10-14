@@ -43,6 +43,7 @@ class Phrases {
   public static void initialize() {
     Gson g = new Gson();
     //TODO(lenny): dehardcode file names?
+    //TODO(lenny): make a stronger file validation to avoid nulls inside arrays
     String jsonStr = Logger.readAllFile("./text/combats.json");
     combatTexts = g.fromJson(jsonStr, CombatTexts.class);
 
