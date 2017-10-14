@@ -115,6 +115,14 @@ class PhraseGenerator {
     return result;
   }
 
+  static Map<String, String> getLangMap(String message) {
+    Map<String, String> result = new HashMap<>();
+    for (String lang : languages) {
+      result.put(lang, message);
+    }
+    return result;
+  }
+
   private static <K> K getTranslation(Map<String, K> translations,
                                        String targetLang) {
     if (translations.get(targetLang) == null) {

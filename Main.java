@@ -368,7 +368,8 @@ public class Main {
 
     if (!txt.startsWith("/")) {
       String message = "\uD83D\uDCE2 " + client.username + ": " + txt;
-      int numListeners = sendToActiveUsers(message) - 1;
+      int numListeners = sendToActiveUsers(
+        PhraseGenerator.getLangMap(message)) - 1;
       if (numListeners == 0) {
         msg(client, "You were not heard by anyone :(");
       }
@@ -388,26 +389,6 @@ public class Main {
       Client recepient = Storage.getClientByChatId(recepientChatId);
       if (recepient.lastActivity > curTime - CHAT_TIMEOUT) {
         msg(recepient, message.get(recepient.lang));
-        numListeners++;
-      } else {
-        passive.add(recepientChatId);
-      }
-    }
-    for (int passiveChatId : passive) {
-      activeChats.remove(passiveChatId);
-    }
-    return numListeners;
-  }
-
-  // returns number of people who heard you. Does not support translations.
-  private static int sendToActiveUsers(String message) {
-    // If changed - also change the other function with the same name.
-    int numListeners = 0;
-    List<Integer> passive = new LinkedList<>();
-    for (int recepientChatId : activeChats) {
-      Client recepient = Storage.getClientByChatId(recepientChatId);
-      if (recepient.lastActivity > curTime - CHAT_TIMEOUT) {
-        msg(recepient, message);
         numListeners++;
       } else {
         passive.add(recepientChatId);
