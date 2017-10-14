@@ -1,4 +1,5 @@
 TODO:
+- If you delete conversation, buttons disappear
 - Display items owned in the profile (healing potions)
 - Crafting
   - Define which mobs drop what
