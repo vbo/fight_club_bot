@@ -24,27 +24,27 @@
       "shy"
     ],
     "ru": [
-      "furious",
-      "dangerous",
-      "rabid",
-      "mad",
-      "wild",
-      "frenzied",
-      "impudent",
-      "insolent",
-      "shameless",
-      "bold",
-      "insidious",
-      "treacherous",
-      "cunning",
-      "sly",
-      "crafty",
-      "naughty",
-      "wicked",
-      "rude",
-      "nasty",
-      "timid",
-      "shy"
+      "бешеный",
+      "опасный",
+      "злой",
+      "психованный",
+      "дикий",
+      "взбешенный",
+      "дерзкий",
+      "наглый",
+      "бесстыжий",
+      "смелый",
+      "разъяренный",
+      "вероломный",
+      "коварный",
+      "хитрый",
+      "ловкий",
+      "озорной",
+      "безнравственный",
+      "грубый",
+      "гадкий",
+      "робкий",
+      "стеснительный"
     ]
   },
   "blocked": {
@@ -59,14 +59,14 @@
       "forsaw it and managed to end up without a scratch"
     ],
     "ru": [
-      "skillfully blocked the hit",
-      "masterfully avoided the blow",
-      "stepped back to avoid the hit",
-      "quickly dodged",
-      "rapidly darted away",
-      "cautiously rushed away",
-      "anticipated it and was able to get away with no damage",
-      "forsaw it and managed to end up without a scratch"
+      "искусно заблокировал удар",
+      "мастерски избежал атаки",
+      "отступил чтобы избежать трагедии",
+      "быстро улонился",
+      "стремтельно увернулся",
+      "аккуратно извернулся",
+      "предвидел атаку и смог избежеть урона",
+      "ожидал атаку и смог отделаться царапиной"
     ]
   },
   "but": {
@@ -80,13 +80,12 @@
       "and that's when"
     ],
     "ru": [
-      "but",
-      "when",
-      "when suddenly",
-      "just as",
-      "whereas",
-      "meanwhile",
-      "and that's when"
+      "но",
+      "как вдруг",
+      "когда",
+      "как из неоткуда",
+      "в то время как",
+      "и тут"
     ]
   },
   "hit": {
@@ -100,7 +99,6 @@
         "stroked his eye",
         "made a quick punch in his throat",
         "poked a finger in his mouth",
-        "punched his forehead with all the dope",
         "punched his forehead with all the dope",
         "slapped him from all nonsense",
         "poked a finger in his eye"
@@ -127,18 +125,17 @@
     ],
     "ru": [
       [
-        "has thoughtfully smashed his face",
-        "slammed his nose with the heel",
-        "caressed his cheek",
-        "bluntly bit his nose",
-        "desparately punched his eyebrow",
-        "stroked his eye",
-        "made a quick punch in his throat",
-        "poked a finger in his mouth",
-        "punched his forehead with all the dope",
-        "punched his forehead with all the dope",
-        "slapped him from all nonsense",
-        "poked a finger in his eye"
+        "вдумчиво вмазал ему по лицу",
+        "стукнул в его нос пяткой",
+        "погладил его по щеке",
+        "резко укусил его за нос",
+        "непрезойдено треснул ему в бровь",
+        "влепил ему в глаз",
+        "вцепился в горло противника",
+        "засунул палец врагу в рот",
+        "вмазал ему по лбу со всей дури",
+        "сделал сильную пощечину",
+        "ткнул пальцем в глаз"
       ],
       [
         "quickly hit in the pit of his stomach",
