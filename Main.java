@@ -202,7 +202,7 @@ public class Main {
     if (newClient) {
       msg(client, "Welcome to the Fight Club!", mainButtons);
       TelegramApi.sendHelp(client.chatId);
-      msg(client, "What language do you prefer?", langButtons);
+      msg(client, "Which language do you prefer?", langButtons);
       sendToActiveUsers(PhraseGenerator.getJoinedTheFightClub(
           client.username));
     }
